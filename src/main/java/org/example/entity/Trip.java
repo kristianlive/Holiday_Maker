@@ -2,7 +2,9 @@ package org.example.entity;
 
 import lombok.*;
 
+
 import java.util.ArrayList;
+
 import java.util.List;
 
 @Data
@@ -20,6 +22,7 @@ public class Trip {
     private TypeOfTrip type;
 
 
+
     public void addActivity(Activity activity) {
        if (activities == null) {
            activities = new ArrayList<>();
@@ -27,6 +30,7 @@ public class Trip {
          activities.add(activity);
        activity.setTrip(this);
     }
+
 }
 
 

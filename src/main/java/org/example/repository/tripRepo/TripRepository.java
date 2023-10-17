@@ -2,6 +2,8 @@ package org.example.repository.tripRepo;
 
 import org.example.entity.Trip;
 
+
+
 import java.util.List;
 
 public interface TripRepository {

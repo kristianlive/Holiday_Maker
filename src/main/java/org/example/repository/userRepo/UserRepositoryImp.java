@@ -2,6 +2,8 @@ package org.example.repository.userRepo;
 
 import org.example.db.Database;
 import org.example.entity.User;
+import org.example.repository.userRepo.UserRepository;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,7 @@ ResultSet rs = null;
                         .password(rs.getString("password"))
                         .build();
             }
+
         } catch (SQLException ex) {
             System.out.println("Something went wrong: " + ex.getMessage());
         }
@@ -68,6 +71,7 @@ ResultSet rs = null;
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException ex) {
+
             System.out.println(ex.getMessage());
         }
     }
@@ -77,11 +81,13 @@ ResultSet rs = null;
         try {
             stmt = conn.createStatement();
             stmt.executeUpdate("DELETE FROM users WHERE id = " + user.getId());
+
         } catch (SQLIntegrityConstraintViolationException ex) {
             System.err.println(ex.getMessage());
         } catch (SQLException ex) {
             System.out.println("Something went wrong: " + ex.getMessage());
         }
+
     }
 
     @Override
@@ -100,10 +106,12 @@ ResultSet rs = null;
                        .password(rs.getString("password"))
                        .build());
             }
+
         } catch (SQLException ex) {
             System.out.println("Something went wrong: " + ex.getMessage());
         }
         return users;
     }
+
 
 }
