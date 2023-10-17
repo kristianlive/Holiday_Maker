@@ -9,15 +9,24 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Resa {
+public class Trip {
     private Long id;
     private String name;
     private List<Activity> activities;
     private Accomodation accomodation;
     private List<Addon> addons;
     private double price;
-    private TypAvResa type;
+    private TypeOfTrip type;
 }
+
+
+
+
+
+
+
+
+
 // CREATE TABLE `holiday-maker`.`trips` (
 //  `trip_id` INT NOT NULL AUTO_INCREMENT,
 //  `name` VARCHAR(45) NULL,

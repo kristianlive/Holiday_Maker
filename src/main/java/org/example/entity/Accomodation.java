@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 public class Accomodation {
     private Long id;
-    private Resa resaId;
+    private Trip tripId;
     private String type;
     private String address;
     private double price;

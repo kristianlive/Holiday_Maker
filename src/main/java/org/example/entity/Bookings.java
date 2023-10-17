@@ -10,5 +10,5 @@ import lombok.*;
 public class Bookings {
     private Long id;
     private User userId;
-    private Resa resaId;
+    private Trip tripId;
 }
