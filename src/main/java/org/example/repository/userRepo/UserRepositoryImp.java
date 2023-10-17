@@ -1,8 +1,7 @@
-package org.example.repository;
+package org.example.repository.userRepo;
 
 import org.example.db.Database;
 import org.example.entity.User;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,19 +27,29 @@ ResultSet rs = null;
                         .password(rs.getString("password"))
                         .build();
             }
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (SQLException ex) {
+            System.out.println("Something went wrong: " + ex.getMessage());
+        }
         return user;
     }
 
     @Override
     public void add(User user) {
-
         try {
-            stmt = conn.createStatement();
-            stmt.executeUpdate("INSERT INTO users (first_name, last_name, email, password) VALUES ('" + user.getFirstName() + "', '" + user.getLastName() + "', '" + user.getEmail() + "', '" + user.getPassword() + "')");
-        } catch (Exception ex) { ex.printStackTrace();
-        }
+            String insertQuery = "INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
 
+            try (PreparedStatement preparedStatement = conn.prepareStatement(insertQuery)) {
+                preparedStatement.setString(1, user.getFirstName());
+                preparedStatement.setString(2, user.getLastName());
+                preparedStatement.setString(3, user.getEmail());
+                preparedStatement.setString(4, user.getPassword());
+
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            System.out.println("Something went wrong: " + ex.getMessage());
+
+        }
     }
 
     @Override
@@ -59,12 +68,9 @@ ResultSet rs = null;
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            System.out.println(ex.getMessage());
         }
     }
-
-
-
 
     @Override
     public void remove(User user) {
@@ -94,7 +100,10 @@ ResultSet rs = null;
                        .password(rs.getString("password"))
                        .build());
             }
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (SQLException ex) {
+            System.out.println("Something went wrong: " + ex.getMessage());
+        }
         return users;
     }
+
 }
