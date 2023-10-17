@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.db.Database;
+import org.example.entity.Resa;
 import org.example.entity.User;
 import org.example.repository.UserRepositoryImp;
 import org.example.services.UserService;
