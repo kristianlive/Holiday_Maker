@@ -1,6 +1,8 @@
 package org.example.repository.tripRepo;
 
 import org.example.entity.Trip;
+import org.example.entity.User;
+
 
 import java.util.List;
 

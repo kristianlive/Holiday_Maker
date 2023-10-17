@@ -2,6 +2,10 @@ package org.example.repository.userRepo;
 
 import org.example.db.Database;
 import org.example.entity.User;
+
+
+import org.example.repository.userRepo.UserRepository;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +31,19 @@ ResultSet rs = null;
                         .password(rs.getString("password"))
                         .build();
             }
+
         } catch (SQLException ex) {
             System.out.println("Something went wrong: " + ex.getMessage());
         }
+
+        } catch (Exception ex) { ex.printStackTrace(); }
+
         return user;
     }
 
     @Override
     public void add(User user) {
+
         try {
             String insertQuery = "INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
 
@@ -50,6 +59,13 @@ ResultSet rs = null;
             System.out.println("Something went wrong: " + ex.getMessage());
 
         }
+
+        try {
+            stmt = conn.createStatement();
+            stmt.executeUpdate("INSERT INTO users (first_name, last_name, email, password) VALUES ('" + user.getFirstName() + "', '" + user.getLastName() + "', '" + user.getEmail() + "', '" + user.getPassword() + "')");
+        } catch (Exception ex) { ex.printStackTrace();
+        }
+
     }
 
     @Override
@@ -68,20 +84,39 @@ ResultSet rs = null;
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException ex) {
+
             System.out.println(ex.getMessage());
         }
     }
+
+
+            ex.printStackTrace();
+        }
+    }
+
+
+    public User update_(User user) {
+
+        try {
+            stmt = conn.createStatement();
+            stmt.executeUpdate("UPDATE users SET first_name = '" + user.getFirstName() + "', last_name = '" + user.getLastName() + "', email = '" + user.getEmail() + "', password = '" + user.getPassword() + "' WHERE id = " + user.getId());
+
+        } catch (SQLException ex) {
+            ex.printStackTrace(); // or log the exception
+        }
+        return user;
+
+    }
+
 
     @Override
     public void remove(User user) {
         try {
             stmt = conn.createStatement();
             stmt.executeUpdate("DELETE FROM users WHERE id = " + user.getId());
-        } catch (SQLIntegrityConstraintViolationException ex) {
-            System.err.println(ex.getMessage());
         } catch (SQLException ex) {
-            System.out.println("Something went wrong: " + ex.getMessage());
-        }
+            ex.printStackTrace();
+    }
     }
 
     @Override
@@ -105,5 +140,6 @@ ResultSet rs = null;
         }
         return users;
     }
+
 
 }

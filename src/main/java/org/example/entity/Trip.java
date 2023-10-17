@@ -2,7 +2,9 @@ package org.example.entity;
 
 import lombok.*;
 
+
 import java.util.ArrayList;
+
 import java.util.List;
 
 @Data
@@ -19,6 +21,9 @@ public class Trip {
     private double price;
     private TypeOfTrip type;
 
+  
+  
+  
 
     public void addActivity(Activity activity) {
        if (activities == null) {
@@ -27,6 +32,7 @@ public class Trip {
          activities.add(activity);
        activity.setTrip(this);
     }
+
 }
 
 
