@@ -1,7 +1,8 @@
-package org.example.repository;
+package org.example.repository.userRepo;
 
 import org.example.db.Database;
 import org.example.entity.User;
+import org.example.repository.userRepo.UserRepository;
 
 import java.sql.*;
 import java.util.ArrayList;
