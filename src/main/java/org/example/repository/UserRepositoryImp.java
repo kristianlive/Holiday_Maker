@@ -64,27 +64,18 @@ ResultSet rs = null;
     }
 
 
-    public User update_(User user) {
 
-        try {
-            stmt = conn.createStatement();
-            stmt.executeUpdate("UPDATE users SET first_name = '" + user.getFirstName() + "', last_name = '" + user.getLastName() + "', email = '" + user.getEmail() + "', password = '" + user.getPassword() + "' WHERE id = " + user.getId());
-
-        } catch (SQLException ex) {
-            ex.printStackTrace(); // or log the exception
-        }
-        return user;
-
-    }
 
     @Override
     public void remove(User user) {
         try {
             stmt = conn.createStatement();
             stmt.executeUpdate("DELETE FROM users WHERE id = " + user.getId());
+        } catch (SQLIntegrityConstraintViolationException ex) {
+            System.err.println(ex.getMessage());
         } catch (SQLException ex) {
-            ex.printStackTrace();
-    }
+            System.out.println("Something went wrong: " + ex.getMessage());
+        }
     }
 
     @Override

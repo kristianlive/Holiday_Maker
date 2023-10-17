@@ -1,15 +1,41 @@
 package org.example.services;
 
+import org.example.db.Database;
 import org.example.entity.User;
 import org.example.repository.UserRepository;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Optional;
 
 public class UserService {
     private UserRepository userRepository;
+    private Database db = Database.getInstance();
+
+
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.createUserTable();
+    }
+
+    private void createUserTable(){
+        try {
+            var conn = db.connectToDb();
+            String query = "CREATE TABLE IF NOT EXISTS users (\n" +
+                    "    id INT PRIMARY KEY,\n" +
+                    "    first_name VARCHAR(255) NOT NULL,\n" +
+                    "    last_name VARCHAR(255) NOT NULL,\n" +
+                    "    email VARCHAR(255) NOT NULL,\n" +
+                    "    password VARCHAR(255) NOT NULL\n" +
+                    ");";
+
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(query);
+        }catch (SQLException ex){
+            ex.printStackTrace();
+
+    }
     }
 
     public void findById(Long id) {
