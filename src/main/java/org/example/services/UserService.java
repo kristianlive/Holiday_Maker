@@ -1,7 +1,7 @@
 package org.example.services;
 
 import org.example.entity.User;
-import org.example.repository.UserRepository;
+import org.example.repository.userRepo.UserRepository;
 
 import java.util.Optional;
 
