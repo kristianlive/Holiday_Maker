@@ -1,4 +1,4 @@
-package org.example.repository.userRepo;
+package org.example.repository.accomodationRepo;
 
 import org.example.entity.Accomodation;
 
