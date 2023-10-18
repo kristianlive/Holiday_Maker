@@ -3,6 +3,7 @@ package org.example;
 import org.example.db.Database;
 import org.example.entity.User;
 import org.example.repository.userRepo.UserRepositoryImp;
+import org.example.services.AccomodationService;
 import org.example.services.UserService;
 
 
@@ -31,6 +32,8 @@ public class Main {
         userService.getAllUsers();
         userService.removeUser(1L);
         userService.getAllUsers();
+
+       // AccomodationService accomodationService = new AccomodationService();
 
 
     }
