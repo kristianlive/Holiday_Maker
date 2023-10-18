@@ -11,5 +11,6 @@ public class Activity {
     private Long id;
     private String title;
     private double price;
+    private Trip trip;
 
 }
