@@ -21,11 +21,12 @@ public class TripRepositoryImp implements TripRepository {
             stmt.setLong(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                Trip trip = new Trip();
-                trip.setId(rs.getLong("trip_id"));
-                trip.setName(rs.getString("name"));
-                trip.setType(TypeOfTrip.valueOf(rs.getString("type")));
-                trip.setPrice(rs.getDouble("price"));
+                Trip trip = Trip.builder()
+                        .id(rs.getLong("trip_id"))
+                        .name(rs.getString("name"))
+                        .type(TypeOfTrip.valueOf(rs.getString("type")))
+                        .price(rs.getDouble("price"))
+                        .build();
                 return trip;
             }
         } catch (SQLException e) {
@@ -36,12 +37,14 @@ public class TripRepositoryImp implements TripRepository {
 
     @Override
     public void add(Trip trip) {
-        String sql = "INSERT INTO trips (name, price, type) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO trips (name, price, type, accommodation_id) VALUES (?, ?, ?, ?)";
         try (Connection conn = db.connectToDb();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, trip.getName());
             stmt.setDouble(2, trip.getPrice());
             stmt.setString(3, trip.getType().toString());
+            stmt.setLong(4, trip.getAccommodation().getId());
+
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -62,13 +65,14 @@ public class TripRepositoryImp implements TripRepository {
 
     @Override
     public void update(Trip trip) {
-        String sql = "UPDATE trips SET name = ?, price = ?, type = ? WHERE trip_id = ?";
+        String sql = "UPDATE trips SET name = ?, price = ?, type = ?, accommodation_id = ? WHERE trip_id = ?";
         try (Connection conn = db.connectToDb();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, trip.getName());
             stmt.setDouble(2, trip.getPrice());
             stmt.setString(3, trip.getType().toString());
-            stmt.setLong(4, trip.getId());
+            stmt.setLong(4, trip.getAccommodation().getId());
+            stmt.setLong(5, trip.getId());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -107,6 +111,7 @@ public class TripRepositoryImp implements TripRepository {
                        .name(rs.getString("name"))
                        .type(TypeOfTrip.valueOf(rs.getString("type")))
                        .price(rs.getDouble("price"))
+                       .accommodation(getAccommodationById(rs.getLong("accommodation_id")))
                        .build();
 
                trips.add(trip);
