@@ -1,12 +1,21 @@
 package org.example.services;
 
+
 import org.example.entity.User;
 import org.example.repository.userRepo.UserRepository;
 
+
+import org.example.entity.Trip;
+import org.example.entity.User;
+import org.example.repository.userRepo.UserRepository;
+import java.util.List;
 import java.util.Optional;
 
 public class UserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private List<Trip> trips;
+
+
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -49,13 +58,5 @@ public class UserService {
             System.out.println(user);
         }
         System.out.println("All users");
-    }
-
-    public void getUserByEmail() {
-        System.out.println("User by email");
-    }
-
-    public void getUserByFirstName() {
-        System.out.println("User by first name");
     }
 }
