@@ -2,7 +2,6 @@ package org.example.repository.tripRepo;
 
 import org.example.db.Database;
 import org.example.entity.Trip;
-import org.example.entity.TypeOfTrip;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -55,12 +54,10 @@ class TripRepositoryImpTest {
         Trip expectedTrip = new Trip();
         expectedTrip.setId(1L);
         expectedTrip.setName("Test Trip");
-        expectedTrip.setType(TypeOfTrip.PACKAGETRIP); // Replace SOME_TYPE with an actual type
         expectedTrip.setPrice(100.0);
 
         when(resultSet.getLong("trip_id")).thenReturn(expectedTrip.getId());
         when(resultSet.getString("name")).thenReturn(expectedTrip.getName());
-        when(resultSet.getString("type")).thenReturn(expectedTrip.getType().toString());
         when(resultSet.getDouble("price")).thenReturn(expectedTrip.getPrice());
 
         Trip result = tripRepository.get(1L);
@@ -72,7 +69,6 @@ class TripRepositoryImpTest {
     public void add_withValidTrip_insertsTrip() throws SQLException {
         Trip trip = new Trip();
         trip.setName("Test Trip");
-        trip.setType(TypeOfTrip.PACKAGETRIP); // Replace SOME_TYPE with an actual type
         trip.setPrice(100.0);
 
         when(conn.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
@@ -88,7 +84,6 @@ class TripRepositoryImpTest {
         Trip trip = new Trip();
         trip.setId(1L);
         trip.setName("Updated Trip");
-        trip.setType(TypeOfTrip.PACKAGETRIP); // Replace SOME_TYPE with an actual type
         trip.setPrice(150.0);
 
         when(conn.prepareStatement(anyString())).thenReturn(preparedStatement);
@@ -104,7 +99,6 @@ class TripRepositoryImpTest {
         Trip trip = new Trip();
         trip.setId(1L);
         trip.setName("Test Trip");
-        trip.setType(TypeOfTrip.PACKAGETRIP); // Replace SOME_TYPE with an actual type
         trip.setPrice(100.0);
 
         when(conn.prepareStatement(anyString())).thenReturn(preparedStatement);
@@ -123,19 +117,16 @@ class TripRepositoryImpTest {
         Trip trip1 = new Trip();
         trip1.setId(1L);
         trip1.setName("Trip One");
-        trip1.setType(TypeOfTrip.CUSTOMTRIP); // Replace SOME_TYPE with an actual type
         trip1.setPrice(100.0);
 
         Trip trip2 = new Trip();
         trip2.setId(2L);
         trip2.setName("Trip Two");
-        trip2.setType(TypeOfTrip.PACKAGETRIP); // Replace SOME_OTHER_TYPE with an actual type
         trip2.setPrice(150.0);
 
         when(resultSet.next()).thenReturn(true, true, false); // Simulate two rows in result set
         when(resultSet.getLong("trip_id")).thenReturn(trip1.getId(), trip2.getId());
         when(resultSet.getString("name")).thenReturn(trip1.getName(), trip2.getName());
-        when(resultSet.getString("type")).thenReturn(trip1.getType().toString(), trip2.getType().toString());
         when(resultSet.getDouble("price")).thenReturn(trip1.getPrice(), trip2.getPrice());
 
         List<Trip> result = tripRepository.getAllTrips();

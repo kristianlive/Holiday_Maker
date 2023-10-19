@@ -19,7 +19,6 @@ public class Trip {
     private Accomodation accomodation;
     private List<Addon> addons;
     private double price;
-    private TypeOfTrip type;
 
 
 

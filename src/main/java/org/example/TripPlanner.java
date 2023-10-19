@@ -1,9 +1,12 @@
 package org.example;
 
-import org.example.db.Database;
 import org.example.entity.User;
+import org.example.repository.packageTripRepo.PackageTripRepositoryImp;
 import org.example.repository.userRepo.UserRepositoryImp;
+import org.example.services.PackageTripsServices;
 import org.example.services.UserService;
+
+
 import java.util.Scanner;
 
 public class TripPlanner {
@@ -14,6 +17,7 @@ public class TripPlanner {
         this.scanner = new Scanner(System.in);
     }
     UserService userService = new UserService(new UserRepositoryImp());
+    PackageTripsServices packageTripsService = new PackageTripsServices(new PackageTripRepositoryImp());
     public void run() {
         System.out.println("Welcome to the Trip Planner!");
         System.out.println("-----------------------------");
@@ -77,26 +81,19 @@ public class TripPlanner {
 
     private void packageMenu() {
         System.out.println("-----------------------------");
-        System.out.println("Choose a package trip:");
+        System.out.println("Choose a package trip, 1-10:");
+        System.out.println("11 to return to main menu");
         // Example packages, you can modify these
-        System.out.println("1. Beach Vacation");
-        System.out.println("2. Mountain Trekking");
-        System.out.println("3. City Tour");
-        System.out.println("4. Go back to main menu");
+        packageTripsService.getAllPackageTrips();
 
         int choice = Integer.parseInt(scanner.nextLine());
 
         switch (choice) {
-            case 1:
+            case 1-10:
                 // processBeachVacation();
                 break;
-            case 2:
-                // processMountainTrekking();
-                break;
-            case 3:
-                // processCityTour();
-                break;
-            case 4:
+            case 11:
+                mainMenu();
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");
