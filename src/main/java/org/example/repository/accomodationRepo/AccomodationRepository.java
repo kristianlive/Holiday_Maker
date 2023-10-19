@@ -11,7 +11,6 @@ public interface AccomodationRepository {
     void add(Accomodation accomodation);
     void update(Accomodation accomodation);
     void remove(Accomodation accomodation);
-P cla
 
     List<Accomodation> getAllAccomodations();
 }

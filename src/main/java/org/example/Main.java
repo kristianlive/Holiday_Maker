@@ -9,7 +9,8 @@ public class Main {
         Database db = new Database();
         db.connectToDb();
 
-
+        TripPlanner tripPlanner = new TripPlanner();
+        tripPlanner.run();
 
 
 
