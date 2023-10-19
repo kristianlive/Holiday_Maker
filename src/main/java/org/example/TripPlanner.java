@@ -1,6 +1,9 @@
 package org.example;
 
-import org.example.services.AccomodationService;
+import org.example.db.Database;
+import org.example.entity.User;
+import org.example.repository.userRepo.UserRepositoryImp;
+import org.example.services.UserService;
 import java.util.Scanner;
 
 public class TripPlanner {
@@ -10,7 +13,7 @@ public class TripPlanner {
     public TripPlanner() {
         this.scanner = new Scanner(System.in);
     }
-
+    UserService userService = new UserService(new UserRepositoryImp());
     public void run() {
         System.out.println("Welcome to the Trip Planner!");
         System.out.println("-----------------------------");
@@ -36,8 +39,15 @@ public class TripPlanner {
 
         // Call the method to store the user information in the database.
         // saveUserInfo(firstName, lastName, email, password);
+        userService.addUser(User.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .password(password)
+                .build());
         System.out.println("Registration Successful!");
         System.out.println("-----------------------------");
+        userService.getAllUsers();
     }
 
     private void mainMenu() {
