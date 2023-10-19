@@ -19,8 +19,8 @@ public class AccomodationRepositoryImp implements AccomodationRepository {
         try {
             conn = db.connectToDb();
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT * FROM accomodations WHERE id = " + id);
-            while (rs.next()) {
+            rs = stmt.executeQuery("SELECT * FROM accommodation WHERE id = " + id);
+            if (rs.next()) {
                 accomodation = Accomodation.builder()
                         .id(rs.getLong("id"))
                         .type(rs.getString("type"))
@@ -33,6 +33,33 @@ public class AccomodationRepositoryImp implements AccomodationRepository {
         }
         return accomodation;
     }
+
+    /*
+        @Override
+    public Accomodation get(Long id) {
+        Accomodation accomodation = null;
+        String selectQuery = "SELECT * FROM accommodation WHERE id = ?";
+        try {
+            conn = db.connectToDb();
+            try (PreparedStatement preparedStatement = conn.prepareStatement(selectQuery)) {
+                preparedStatement.setLong(1, id);
+                rs = preparedStatement.executeQuery();
+
+                if (rs.next()) {
+                    accomodation = Accomodation.builder()
+                            .id(rs.getLong("id"))
+                            .type(rs.getString("type"))
+                            .address(rs.getString("address"))
+                            .price(rs.getDouble("price"))
+                            .build();
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("Something went wrong: " + ex.getMessage());
+        }
+        return accomodation;
+    }
+     */
 
     @Override
     public void add(Accomodation accomodation) {

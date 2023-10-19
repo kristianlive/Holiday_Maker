@@ -21,7 +21,7 @@ public class AddonRepositoryImp implements AddonRepository {
             conn = db.connectToDb();
             stmt = conn.createStatement();
             rs = stmt.executeQuery("SELECT * FROM addon WHERE id = " + id);
-            while (rs.next()) {
+            if (rs.next()) {
                 addon = Addon.builder()
                         .id(rs.getLong("id"))
                         .title(rs.getString("title"))
