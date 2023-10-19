@@ -1,4 +1,4 @@
-package org.example.repository.userRepo;
+package org.example.repository.accomodationRepo;
 
 import org.example.entity.Accomodation;
 
@@ -11,7 +11,7 @@ public interface AccomodationRepository {
     void add(Accomodation accomodation);
     void update(Accomodation accomodation);
     void remove(Accomodation accomodation);
-
+P cla
 
     List<Accomodation> getAllAccomodations();
 }

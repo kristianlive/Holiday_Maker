@@ -1,7 +1,7 @@
 package org.example.services;
 
 import org.example.entity.Accomodation;
-import org.example.repository.userRepo.AccomodationRepository;
+import org.example.repository.accomodationRepo.AccomodationRepository;
 
 import java.util.Optional;
 
