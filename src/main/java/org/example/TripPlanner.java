@@ -5,11 +5,17 @@ import org.example.repository.packageTripRepo.PackageTripRepositoryImp;
 import org.example.repository.userRepo.UserRepositoryImp;
 import org.example.services.PackageTripsServices;
 import org.example.services.UserService;
+import org.example.services.BookingService;
+import org.example.repository.bookingRepo.BookingRepositoryImp;
+
 
 
 import java.util.Scanner;
 
 public class TripPlanner {
+
+    BookingService bookingService = new BookingService(new BookingRepositoryImp());
+
 
     private Scanner scanner;
 
@@ -22,7 +28,6 @@ public class TripPlanner {
         System.out.println("Welcome to the Trip Planner!");
         System.out.println("-----------------------------");
 
-        registerUser();
         mainMenu();
     }
 
@@ -56,10 +61,12 @@ public class TripPlanner {
 
     private void mainMenu() {
         while (true) {
-            System.out.println("Choose the type of trip:");
-            System.out.println("1. Package");
-            System.out.println("2. Custom");
-            System.out.println("3. Exit");
+            System.out.println("Choose an option:");
+            System.out.println("1. Book Trip");
+            System.out.println("2. Change/Display Trip");
+            System.out.println("3. Search Booking by LastName");
+            System.out.println("4. Remove Booking");
+            System.out.println("5. Exit");
 
             int choice = Integer.parseInt(scanner.nextLine());
 
@@ -71,7 +78,8 @@ public class TripPlanner {
                     customMenu();
                     break;
                 case 3:
-                    System.out.println("Thank you for using Trip Planner. Goodbye!");
+                    System.out.println("Search Booking by LastName");
+                    searchBookingByLastName();
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -100,6 +108,10 @@ public class TripPlanner {
                 packageMenu();
         }
     }
+    private void searchBookingByLastName() {
+
+    }
+
 
     private void customMenu() {
         System.out.println("-----------------------------");

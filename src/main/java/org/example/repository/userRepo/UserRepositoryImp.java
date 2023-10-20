@@ -10,9 +10,10 @@ import java.util.List;
 
 public class UserRepositoryImp implements UserRepository {
     Database db = new Database();
-Connection conn = db.connectToDb();
-Statement stmt = null;
-ResultSet rs = null;
+    Connection conn = db.connectToDb();
+    Statement stmt = null;
+    ResultSet rs = null;
+
     @Override
     public User get(Long id) {
         User user = null;
@@ -93,18 +94,43 @@ ResultSet rs = null;
     @Override
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-      String sql = "SELECT * FROM users";
+        String sql = "SELECT * FROM users";
         try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()) {
-               users.add(User.builder()
-                       .id(rs.getInt("id"))
-                       .firstName(rs.getString("first_name"))
-                       .lastName(rs.getString("last_name"))
-                       .email(rs.getString("email"))
-                       .password(rs.getString("password"))
-                       .build());
+                users.add(User.builder()
+                        .id(rs.getInt("id"))
+                        .firstName(rs.getString("first_name"))
+                        .lastName(rs.getString("last_name"))
+                        .email(rs.getString("email"))
+                        .password(rs.getString("password"))
+                        .build());
+            }
+
+        } catch (SQLException ex) {
+            System.out.println("Something went wrong: " + ex.getMessage());
+        }
+        return users;
+    } // <-- Klammern för 'getAllUsers' metoden
+
+    @Override
+    public List<User> findUsersByLastName(String lastName) {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE last_name = ?";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, lastName);
+            rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                users.add(User.builder()
+                        .id(rs.getInt("id"))
+                        .firstName(rs.getString("first_name"))
+                        .lastName(rs.getString("last_name"))
+                        .email(rs.getString("email"))
+                        .password(rs.getString("password"))
+                        .build());
             }
 
         } catch (SQLException ex) {
@@ -112,6 +138,5 @@ ResultSet rs = null;
         }
         return users;
     }
-
-
 }
+

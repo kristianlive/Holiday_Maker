@@ -24,6 +24,10 @@ public class UserService {
     public void findById(Long id) {
         System.out.println(userRepository.get(id));
     }
+    public List<User> searchUsersByLastName(String lastName) {
+        return userRepository.findUsersByLastName(lastName);
+    }
+
 
     public void addUser(User user) {
         userRepository.add(user);

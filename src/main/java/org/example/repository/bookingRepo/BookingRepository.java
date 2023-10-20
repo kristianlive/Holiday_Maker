@@ -11,4 +11,6 @@ public interface BookingRepository {
     void remove(Bookings booking);
 
     List<Bookings> getAllBookings();
+    List<Bookings> findByLastName(String lastName);
+
 }

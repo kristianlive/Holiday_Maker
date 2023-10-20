@@ -5,6 +5,7 @@ import org.example.entity.Trip;
 import org.example.entity.User;
 import org.example.repository.bookingRepo.BookingRepository;
 
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +38,14 @@ public class BookingService {
         }
         userCart.clear();
     }
-
-
-
-
-
+    public List<Bookings> findBookingsByUserLastName(String lastName) {
+        return bookingRepository.findByLastName(lastName);
     }
+
+
+
+
+
+
+}
 

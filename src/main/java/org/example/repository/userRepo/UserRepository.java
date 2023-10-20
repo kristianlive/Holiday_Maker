@@ -11,4 +11,5 @@ public interface UserRepository {
     void remove(User user);
 
     List<User> getAllUsers();
+    List<User> findUsersByLastName(String lastName);
 }
