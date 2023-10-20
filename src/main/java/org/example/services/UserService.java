@@ -8,6 +8,7 @@ import org.example.repository.userRepo.UserRepository;
 import org.example.entity.Trip;
 import org.example.entity.User;
 import org.example.repository.userRepo.UserRepository;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -16,13 +17,16 @@ public class UserService {
     private List<Trip> trips;
 
 
-
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    public void findById(Long id) {
+    public void findById(int id) {
         System.out.println(userRepository.get(id));
+    }
+
+    public User getUser(int userId) {
+        return userRepository.get(userId);
     }
 
     public void addUser(User user) {
@@ -31,7 +35,7 @@ public class UserService {
     }
 
     public void updateUser(User user) {
-        Optional<User> userOptional = Optional.ofNullable(userRepository.get((long) user.getId()));
+        Optional<User> userOptional = Optional.ofNullable(userRepository.get(user.getId()));
         if (userOptional.isPresent()) {
             userRepository.update(user);
 
@@ -42,7 +46,7 @@ public class UserService {
 
     }
 
-    public void removeUser(Long id) {
+    public void removeUser(int id) {
         if (userRepository.get(id) == null) {
             System.out.println("User not found");
             return;
@@ -53,8 +57,8 @@ public class UserService {
     }
 
     public void getAllUsers() {
-       var users = userRepository.getAllUsers();
-        for (   var user: users) {
+        var users = userRepository.getAllUsers();
+        for (var user : users) {
             System.out.println(user);
         }
         System.out.println("All users");

@@ -5,6 +5,7 @@ import org.example.entity.Trip;
 import org.example.entity.User;
 import org.example.repository.bookingRepo.BookingRepository;
 
+import java.awt.print.Book;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +20,23 @@ public class BookingService {
     }
 
     // Add a trip to the cart
-    public void addToCart(Trip trip, User user) {
-        Bookings booking = new Bookings();
-        booking.setTripId(trip);
-        booking.setUserId(user);
-        userCart.add(booking);
+    public void addToCart(int choice, User user) {
+        System.out.println("Add to cart method");
+        Integer packageTripId = null;
+
+
+        packageTripId = choice;
+
+        // Create booking only if packageTripId is non-null
+
+        Bookings booking = Bookings.builder()
+                .userId(user)
+                .packageTripId(packageTripId)
+                .build();
+
+        bookingRepository.save(booking);
     }
+
 
     public void removeFromCart(Bookings booking) {
         userCart.remove(booking);
@@ -39,8 +51,5 @@ public class BookingService {
     }
 
 
-
-
-
-    }
+}
 

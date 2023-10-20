@@ -1,8 +1,10 @@
 package org.example;
 
 import org.example.entity.User;
+import org.example.repository.bookingRepo.BookingRepositoryImp;
 import org.example.repository.packageTripRepo.PackageTripRepositoryImp;
 import org.example.repository.userRepo.UserRepositoryImp;
+import org.example.services.BookingService;
 import org.example.services.PackageTripsServices;
 import org.example.services.UserService;
 
@@ -16,13 +18,16 @@ public class TripPlanner {
     public TripPlanner() {
         this.scanner = new Scanner(System.in);
     }
+
     UserService userService = new UserService(new UserRepositoryImp());
     PackageTripsServices packageTripsService = new PackageTripsServices(new PackageTripRepositoryImp());
+    BookingService bookingService = new BookingService(new BookingRepositoryImp());
+
     public void run() {
         System.out.println("Welcome to the Trip Planner!");
         System.out.println("-----------------------------");
 
-        registerUser();
+        /*registerUser();*/
         mainMenu();
     }
 
@@ -79,7 +84,27 @@ public class TripPlanner {
         }
     }
 
+    private User getUserFromInput() {
+
+        System.out.print("Enter user ID: ");
+        int userId = Integer.parseInt(scanner.nextLine());
+
+        // Use UserService to get the user by ID
+        User user = userService.getUser(userId);
+
+
+        if (user == null) {
+            System.out.println("User not found. Please try again.");
+            // Retry getting the user if not found
+            return getUserFromInput();
+        }
+        System.out.println("Hello " + user.getFirstName());
+        return user;
+    }
+
     private void packageMenu() {
+        System.out.println("-----------------------------");
+        User user = getUserFromInput();
         System.out.println("-----------------------------");
         System.out.println("Choose a package trip, 1-10:");
         System.out.println("11 to return to main menu");
@@ -88,17 +113,19 @@ public class TripPlanner {
 
         int choice = Integer.parseInt(scanner.nextLine());
 
-        switch (choice) {
-            case 1-10:
-                // processBeachVacation();
-                break;
-            case 11:
-                mainMenu();
-                break;
-            default:
-                System.out.println("Invalid choice. Please try again.");
-                packageMenu();
+        if (choice >= 1 && choice <= 10) {
+            addPackageTripToBooking(choice, user);
+        } else if (choice == 11) {
+            mainMenu();
+        } else {
+            System.out.println("Invalid choice. Please try again.");
+            packageMenu();
         }
+    }
+
+    private void addPackageTripToBooking(int choice, User user) {
+        System.out.println("AddPackagetriptobooking method");
+        bookingService.addToCart(choice, user);
     }
 
     private void customMenu() {
