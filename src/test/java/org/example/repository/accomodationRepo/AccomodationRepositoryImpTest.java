@@ -2,12 +2,9 @@ package org.example.repository.accomodationRepo;
 
 import org.example.db.Database;
 import org.example.entity.Accomodation;
-import org.example.entity.Trip;
-import org.example.entity.TypeOfTrip;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -17,8 +14,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class AccomodationRepositoryImpTest {
 
