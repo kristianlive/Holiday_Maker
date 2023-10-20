@@ -14,7 +14,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookingRepositoryImp implements BookingRepository{
+public class BookingRepositoryImp implements BookingRepository {
 
     Database db = new Database();
     Connection conn = db.connectToDb();
@@ -23,31 +23,20 @@ public class BookingRepositoryImp implements BookingRepository{
 
     TripService tripService = new TripService(new TripRepositoryImp());
     PackageTripsServices packageTripService = new PackageTripsServices(new PackageTripRepositoryImp());
+
     @Override
     public Bookings get(int id) {
         return null;
     }
 
-    public boolean save(Bookings booking) {
+    @Override
+    public boolean addCustomTrip(Bookings booking) {
         boolean isSuccess = false;
-        try (PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO bookings (user_id, custom_trips_id, package_trips_id) VALUES (?, ?, ?)")) {
+        try (PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO bookings (user_id, custom_trips_id) VALUES (?, ?)")) {
             preparedStatement.setLong(1, booking.getUserId().getId());
 
-            // Handle nullable fields
             Integer customTripId = booking.getCustomTripId();
-            Integer packageTripId = booking.getPackageTripId();
-
-            if (customTripId != null) {
-                preparedStatement.setInt(2, customTripId);
-            } else {
-                preparedStatement.setNull(2, Types.INTEGER);
-            }
-
-            if (packageTripId != null) {
-                preparedStatement.setInt(3, packageTripId);
-            } else {
-                preparedStatement.setNull(3, Types.INTEGER);
-            }
+            preparedStatement.setInt(2, customTripId);
 
             int rowsAffected = preparedStatement.executeUpdate();
             isSuccess = rowsAffected > 0;
@@ -57,7 +46,21 @@ public class BookingRepositoryImp implements BookingRepository{
         return isSuccess;
     }
 
+    @Override
+    public boolean addPackageTripToBooking(Bookings booking) {
+        boolean isSuccess = false;
+        try (PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO bookings (user_id, package_trips_id) VALUES (?, ?)")) {
+            preparedStatement.setLong(1, booking.getUserId().getId());
+            int packageTripId = booking.getPackageTripId();
+            preparedStatement.setInt(2, packageTripId);
 
+            int rowsAffected = preparedStatement.executeUpdate();
+            isSuccess = rowsAffected > 0;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return isSuccess;
+    }
 
 
     @Override
