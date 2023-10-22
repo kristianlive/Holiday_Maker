@@ -2,9 +2,11 @@ package org.example;
 
 import org.example.entity.User;
 import org.example.repository.bookingRepo.BookingRepositoryImp;
+import org.example.repository.destinationRepo.DestinationRepositoryImp;
 import org.example.repository.packageTripRepo.PackageTripRepositoryImp;
 import org.example.repository.userRepo.UserRepositoryImp;
 import org.example.services.BookingService;
+import org.example.services.DestinationService;
 import org.example.services.PackageTripsServices;
 import org.example.services.UserService;
 
@@ -22,6 +24,8 @@ public class TripPlanner {
     UserService userService = new UserService(new UserRepositoryImp());
     PackageTripsServices packageTripsService = new PackageTripsServices(new PackageTripRepositoryImp());
     BookingService bookingService = new BookingService(new BookingRepositoryImp());
+
+    DestinationService destinationService = new DestinationService(new DestinationRepositoryImp());
 
     public void run() {
         System.out.println("Welcome to the Trip Planner!");
@@ -130,10 +134,7 @@ public class TripPlanner {
 
     private void customMenu() {
         System.out.println("-----------------------------");
-        System.out.println("Custom Trip:");
-        System.out.println("1. Choose Accommodation");
-        System.out.println("2. Choose Add-ons");
-        System.out.println("3. Choose Activities");
+        addDestinationToCustomTrip();
         System.out.println("4. Go back to main menu");
 
         int choice = Integer.parseInt(scanner.nextLine());
@@ -143,17 +144,23 @@ public class TripPlanner {
 
                 break;
             case 2:
-                // chooseAddons();
+
                 break;
             case 3:
-                // chooseActivities();
+
                 break;
             case 4:
+                mainMenu();
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");
                 customMenu();
         }
+    }
+
+    private void addDestinationToCustomTrip() {
+        System.out.println("Choose a destination");
+        destinationService.getAllDestinations();
     }
 
     public static void main(String[] args) {
