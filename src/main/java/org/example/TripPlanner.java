@@ -67,8 +67,9 @@ public class TripPlanner {
     private void mainMenu() {
         while (true) {
             System.out.println("Choose the type of trip:");
-            System.out.println("1. Package");
-            System.out.println("2. Custom");
+            System.out.println("1. Book a package trip");
+            System.out.println("2. Book a custom trip, choosing individually");
+            System.out.println("3. Show all bookings");
             System.out.println("0. Exit");
 
             int choice = Integer.parseInt(scanner.nextLine());
@@ -136,7 +137,7 @@ public class TripPlanner {
         System.out.println("-----------------------------");
         System.out.println("Choose a package trip, 1-10:");
         System.out.println("11 to return to main menu");
-        // Example packages, you can modify these
+
         packageTripsService.getAllPackageTrips();
 
         int choice = Integer.parseInt(scanner.nextLine());
@@ -152,7 +153,6 @@ public class TripPlanner {
     }
 
     private void addPackageTripToBooking(int choice, User user) {
-        System.out.println("AddPackagetriptobooking method");
         bookingService.addToCart(choice, user);
     }
 
@@ -202,7 +202,6 @@ public class TripPlanner {
         System.out.println("Trip created successfully!");
 
         System.out.println("0. Go back to the main menu");
-
         int choice = Integer.parseInt(scanner.nextLine());
 
         switch (choice) {
@@ -285,7 +284,6 @@ public class TripPlanner {
     }
 
     private double calculateTotalPrice(double destinationPrice, double accommodationPrice, double addonPrice, double activityPrice) {
-
         return destinationPrice + accommodationPrice + addonPrice + activityPrice;
     }
 }
