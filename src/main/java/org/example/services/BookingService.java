@@ -12,9 +12,11 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     List<Bookings> userCart = new ArrayList<>();
 
+
     public BookingService(BookingRepository bookingRepository) {
         this.bookingRepository = bookingRepository;
     }
+
 
     // Add a trip to the cart
     public void addToCart(int choice, User user) {

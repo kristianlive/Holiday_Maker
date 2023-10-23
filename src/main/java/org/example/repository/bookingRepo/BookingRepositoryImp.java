@@ -128,5 +128,38 @@ public class BookingRepositoryImp implements BookingRepository {
         }
         return bookingsList;
     }
+    public List<Bookings> getAllBookingsWithSameLastName(String lastName) {
+        List<Bookings> bookingsList = new ArrayList<>();
+        try {
+            String selectQuery =
+                    "SELECT b.* " +
+                            "FROM bookings b " +
+                            "JOIN users u ON b.user_id = u.id " +
+                            "WHERE u.last_name = ?";
+
+            try (PreparedStatement preparedStatement = conn.prepareStatement(selectQuery)) {
+                preparedStatement.setString(1, lastName);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    Long id = resultSet.getLong("id");
+                    Long userId = resultSet.getLong("user_id");
+                    int customTripId = resultSet.getInt("custom_trips_id");
+                    int packageTripId = resultSet.getInt("package_trips_id");
+
+                    User user = new User();
+                    user.setId(Math.toIntExact(userId));
+
+                    Bookings booking = new Bookings(id, user, customTripId, packageTripId);
+                    bookingsList.add(booking);
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return bookingsList;
+    }
+
 
 }
+
+

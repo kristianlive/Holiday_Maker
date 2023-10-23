@@ -118,15 +118,15 @@ public class UserRepositoryImp implements UserRepository {
         return users;
     } // <-- Klammern för 'getAllUsers' metoden
 
+
+
     @Override
     public List<User> findUsersByLastName(String lastName) {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users WHERE last_name = ?";
-
         try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
             preparedStatement.setString(1, lastName);
-            rs = preparedStatement.executeQuery();
-
+            ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
                 users.add(User.builder()
                         .id(rs.getInt("id"))
@@ -136,11 +136,13 @@ public class UserRepositoryImp implements UserRepository {
                         .password(rs.getString("password"))
                         .build());
             }
-
         } catch (SQLException ex) {
-            System.out.println("Something went wrong: " + ex.getMessage());
+            System.out.println("Error while searching users by last name: " + ex.getMessage());
         }
         return users;
     }
+
+
+
 }
 

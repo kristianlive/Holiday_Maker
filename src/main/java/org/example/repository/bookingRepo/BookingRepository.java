@@ -14,4 +14,5 @@ public interface BookingRepository {
     boolean addPackageTripToBooking(Bookings booking);
 
     List<Bookings> getAllBookingsFromUser(User user);
+
 }

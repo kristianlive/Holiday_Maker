@@ -8,32 +8,31 @@ import org.example.services.BookingService;
 import org.example.services.PackageTripsServices;
 import org.example.services.UserService;
 
-
+import java.util.List;
 import java.util.Scanner;
 
 public class TripPlanner {
 
     private Scanner scanner;
+    private UserService userService;
+    private PackageTripsServices packageTripsService;
+    private BookingService bookingService;
 
     public TripPlanner() {
         this.scanner = new Scanner(System.in);
+        this.userService = new UserService(new UserRepositoryImp());
+        this.packageTripsService = new PackageTripsServices(new PackageTripRepositoryImp());
+        this.bookingService = new BookingService(new BookingRepositoryImp());
     }
-
-    UserService userService = new UserService(new UserRepositoryImp());
-    PackageTripsServices packageTripsService = new PackageTripsServices(new PackageTripRepositoryImp());
-    BookingService bookingService = new BookingService(new BookingRepositoryImp());
 
     public void run() {
         System.out.println("Welcome to the Trip Planner!");
         System.out.println("-----------------------------");
-
-        /*registerUser();*/
         mainMenu();
     }
 
     private void registerUser() {
         System.out.println("Please register before proceeding:");
-
         System.out.print("First Name: ");
         String firstName = scanner.nextLine();
 
@@ -46,14 +45,13 @@ public class TripPlanner {
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
-        // Call the method to store the user information in the database.
-        // saveUserInfo(firstName, lastName, email, password);
         userService.addUser(User.builder()
                 .firstName(firstName)
                 .lastName(lastName)
                 .email(email)
                 .password(password)
                 .build());
+
         System.out.println("Registration Successful!");
         System.out.println("-----------------------------");
         userService.getAllUsers();
@@ -61,21 +59,28 @@ public class TripPlanner {
 
     private void mainMenu() {
         while (true) {
-            System.out.println("Choose the type of trip:");
-            System.out.println("1. Package");
-            System.out.println("2. Custom");
-            System.out.println("3. Exit");
+            System.out.println("1. Book Trip");
+            System.out.println("2. Change/Display Trip");
+            System.out.println("3. Search Booking by LastName");
+            System.out.println("4. Remove Booking");
+            System.out.println("6. Exit");
 
             int choice = Integer.parseInt(scanner.nextLine());
-
             switch (choice) {
                 case 1:
-                    packageMenu();
+                    bookTripMenu();
                     break;
                 case 2:
-                    customMenu();
+                    //changeDisplayTripMenu(); (Se Trello vem har detta uppdrag)
                     break;
                 case 3:
+                    userService.getAllUsers();
+                    searchUsersByLastName();
+                    break;
+                case 4:
+                    //removeBookingMenu(); (Se Trello vem har detta uppdrag)
+                    break;
+                case 6:
                     System.out.println("Thank you for using Trip Planner. Goodbye!");
                     return;
                 default:
@@ -85,38 +90,50 @@ public class TripPlanner {
     }
 
     private User getUserFromInput() {
-
         System.out.print("Enter user ID: ");
         int userId = Integer.parseInt(scanner.nextLine());
 
-        // Use UserService to get the user by ID
         User user = userService.getUser(userId);
-
-
         if (user == null) {
             System.out.println("User not found. Please try again.");
-            // Retry getting the user if not found
             return getUserFromInput();
         }
         System.out.println("Hello " + user.getFirstName());
         return user;
     }
 
+    private void bookTripMenu() {
+        System.out.println("Choose the type of trip:");
+        System.out.println("1. Package Trip");
+        System.out.println("2. Custom Trip");
+
+        int choice = Integer.parseInt(scanner.nextLine());
+        switch (choice) {
+            case 1:
+                packageMenu();
+                break;
+            case 2:
+                customMenu();
+                break;
+            default:
+                System.out.println("Invalid choice. Please try again.");
+                bookTripMenu();
+        }
+    }
     private void packageMenu() {
         System.out.println("-----------------------------");
         User user = getUserFromInput();
         System.out.println("-----------------------------");
         System.out.println("Choose a package trip, 1-10:");
         System.out.println("11 to return to main menu");
-        // Example packages, you can modify these
+
         packageTripsService.getAllPackageTrips();
 
         int choice = Integer.parseInt(scanner.nextLine());
-
         if (choice >= 1 && choice <= 10) {
             addPackageTripToBooking(choice, user);
         } else if (choice == 11) {
-            mainMenu();
+            return;
         } else {
             System.out.println("Invalid choice. Please try again.");
             packageMenu();
@@ -137,10 +154,9 @@ public class TripPlanner {
         System.out.println("4. Go back to main menu");
 
         int choice = Integer.parseInt(scanner.nextLine());
-
         switch (choice) {
             case 1:
-
+                // chooseAccommodation();
                 break;
             case 2:
                 // chooseAddons();
@@ -149,12 +165,28 @@ public class TripPlanner {
                 // chooseActivities();
                 break;
             case 4:
-                break;
+                return; // Return to main menu directly
             default:
                 System.out.println("Invalid choice. Please try again.");
                 customMenu();
         }
     }
+
+    private void searchUsersByLastName() {
+        System.out.println("Enter the Last Name to search:");
+        String lastName = scanner.nextLine();
+        List<User> users = userService.searchUsersByLastName(lastName);
+        if (users.isEmpty()) {
+            System.out.println("No users found with last name: " + lastName);
+        } else {
+            for (User user : users) {
+                System.out.println(user);
+            }
+        }
+    }
+
+
+
 
     public static void main(String[] args) {
         TripPlanner tripPlanner = new TripPlanner();
