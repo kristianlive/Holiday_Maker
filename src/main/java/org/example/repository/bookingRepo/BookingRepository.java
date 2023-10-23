@@ -1,16 +1,17 @@
 package org.example.repository.bookingRepo;
 
 import org.example.entity.Bookings;
+import org.example.entity.User;
 
 import java.util.List;
 
 public interface BookingRepository {
     Bookings get(int id);
-    Bookings save(Bookings booking);
+    boolean addCustomTrip(Bookings booking);
     void update(Bookings booking);
     void remove(Bookings booking);
 
-    List<Bookings> getAllBookings();
-    List<Bookings> findByLastName(String lastName);
+    boolean addPackageTripToBooking(Bookings booking);
 
+    List<Bookings> getAllBookingsFromUser(User user);
 }

@@ -1,12 +1,9 @@
 package org.example.services;
 
 import org.example.entity.Bookings;
-import org.example.entity.Trip;
 import org.example.entity.User;
 import org.example.repository.bookingRepo.BookingRepository;
 
-
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,12 +17,22 @@ public class BookingService {
     }
 
     // Add a trip to the cart
-    public void addToCart(Trip trip, User user) {
-        Bookings booking = new Bookings();
-        booking.setTripId(trip);
-        booking.setUserId(user);
-        userCart.add(booking);
+    public void addToCart(int choice, User user) {
+        System.out.println("Add to cart method");
+
+        Bookings booking = Bookings.builder()
+                .userId(user)
+                .packageTripId(choice)
+                .build();
+
+        boolean successfullyAddedPackageTrip = bookingRepository.addPackageTripToBooking(booking);
+        if (successfullyAddedPackageTrip) {
+            System.out.println("Successfully created packageTrip");
+        }else {
+            System.out.println("Could not create packageTrip");
+        }
     }
+
 
     public void removeFromCart(Bookings booking) {
         userCart.remove(booking);
@@ -34,17 +41,10 @@ public class BookingService {
     // Proceed to payment
     public void proceedToPayment() {
         for (Bookings booking : userCart) {
-            bookingRepository.save(booking);
+            /*bookingRepository.save(booking);*/
         }
         userCart.clear();
     }
-    public List<Bookings> findBookingsByUserLastName(String lastName) {
-        return bookingRepository.findByLastName(lastName);
-    }
-
-
-
-
 
 
 }

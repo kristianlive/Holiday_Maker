@@ -1,33 +1,33 @@
 package org.example;
 
 import org.example.entity.User;
+import org.example.repository.bookingRepo.BookingRepositoryImp;
 import org.example.repository.packageTripRepo.PackageTripRepositoryImp;
 import org.example.repository.userRepo.UserRepositoryImp;
+import org.example.services.BookingService;
 import org.example.services.PackageTripsServices;
 import org.example.services.UserService;
-import org.example.services.BookingService;
-import org.example.repository.bookingRepo.BookingRepositoryImp;
-
 
 
 import java.util.Scanner;
 
 public class TripPlanner {
 
-    BookingService bookingService = new BookingService(new BookingRepositoryImp());
-
-
     private Scanner scanner;
 
     public TripPlanner() {
         this.scanner = new Scanner(System.in);
     }
+
     UserService userService = new UserService(new UserRepositoryImp());
     PackageTripsServices packageTripsService = new PackageTripsServices(new PackageTripRepositoryImp());
+    BookingService bookingService = new BookingService(new BookingRepositoryImp());
+
     public void run() {
         System.out.println("Welcome to the Trip Planner!");
         System.out.println("-----------------------------");
 
+        /*registerUser();*/
         mainMenu();
     }
 
@@ -61,12 +61,10 @@ public class TripPlanner {
 
     private void mainMenu() {
         while (true) {
-            System.out.println("Choose an option:");
-            System.out.println("1. Book Trip");
-            System.out.println("2. Change/Display Trip");
-            System.out.println("3. Search Booking by LastName");
-            System.out.println("4. Remove Booking");
-            System.out.println("5. Exit");
+            System.out.println("Choose the type of trip:");
+            System.out.println("1. Package");
+            System.out.println("2. Custom");
+            System.out.println("3. Exit");
 
             int choice = Integer.parseInt(scanner.nextLine());
 
@@ -78,8 +76,7 @@ public class TripPlanner {
                     customMenu();
                     break;
                 case 3:
-                    System.out.println("Search Booking by LastName");
-                    searchBookingByLastName();
+                    System.out.println("Thank you for using Trip Planner. Goodbye!");
                     return;
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -87,7 +84,27 @@ public class TripPlanner {
         }
     }
 
+    private User getUserFromInput() {
+
+        System.out.print("Enter user ID: ");
+        int userId = Integer.parseInt(scanner.nextLine());
+
+        // Use UserService to get the user by ID
+        User user = userService.getUser(userId);
+
+
+        if (user == null) {
+            System.out.println("User not found. Please try again.");
+            // Retry getting the user if not found
+            return getUserFromInput();
+        }
+        System.out.println("Hello " + user.getFirstName());
+        return user;
+    }
+
     private void packageMenu() {
+        System.out.println("-----------------------------");
+        User user = getUserFromInput();
         System.out.println("-----------------------------");
         System.out.println("Choose a package trip, 1-10:");
         System.out.println("11 to return to main menu");
@@ -96,22 +113,20 @@ public class TripPlanner {
 
         int choice = Integer.parseInt(scanner.nextLine());
 
-        switch (choice) {
-            case 1-10:
-                // processBeachVacation();
-                break;
-            case 11:
-                mainMenu();
-                break;
-            default:
-                System.out.println("Invalid choice. Please try again.");
-                packageMenu();
+        if (choice >= 1 && choice <= 10) {
+            addPackageTripToBooking(choice, user);
+        } else if (choice == 11) {
+            mainMenu();
+        } else {
+            System.out.println("Invalid choice. Please try again.");
+            packageMenu();
         }
     }
-    private void searchBookingByLastName() {
 
+    private void addPackageTripToBooking(int choice, User user) {
+        System.out.println("AddPackagetriptobooking method");
+        bookingService.addToCart(choice, user);
     }
-
 
     private void customMenu() {
         System.out.println("-----------------------------");

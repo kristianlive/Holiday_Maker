@@ -5,7 +5,7 @@ import org.example.entity.User;
 import java.util.List;
 
 public interface UserRepository {
-    User get(Long id);
+    User get(int id);
     void add(User user);
     void update(User user);
     void remove(User user);
