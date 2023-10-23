@@ -92,7 +92,24 @@ public class TripPlanner {
     }
 
     private void bookingMenu() {
+    // Get all bookings associated with the user
+        /*SELECT c.trip_id, a.type, d.city,
+                (SELECT GROUP_CONCAT(DISTINCT ac.title SEPARATOR ', ') FROM trip_activities ta JOIN activity ac ON ac.id = ta.activity_id WHERE ta.custom_trips_id = c.trip_id) AS activity_titles,
+        (SELECT GROUP_CONCAT(DISTINCT ad.title SEPARATOR ', ') FROM trip_addons tad JOIN addon ad ON ad.id = tad.addon_id WHERE tad.custom_trips_id = c.trip_id) AS addon_titles,
+        c.totalprice
+        FROM bookings b
+        JOIN custom_trips c ON b.custom_trips_id = c.trip_id
+        JOIN accommodation a ON c.accommodation_id = a.id
+        JOIN destination d ON c.destination_id = d.id
+        WHERE b.user_id = 30;
 
+        SELECT b.id as bookings_id, pt.description, a.title as addon_title, ac.type as accommodation_type, act.title as activity_title,  pt.destination, pt.price as totalprice
+        FROM bookings b
+        LEFT JOIN package_trips pt ON b.package_trips_id = pt.id
+        LEFT JOIN addon a ON pt.addon_id = a.id
+        LEFT JOIN accommodation ac ON pt.accommodation_id = ac.id
+        LEFT JOIN activity act ON pt.activity_id = act.id
+        WHERE b.user_id = 30 AND b.custom_trips_id IS NULL;*/
     }
 
     private User getUserFromInput() {

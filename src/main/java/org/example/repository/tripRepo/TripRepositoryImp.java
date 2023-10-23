@@ -152,7 +152,7 @@ public class TripRepositoryImp implements TripRepository {
             bookingStmt.setLong(2, custom_trips_id);
 
 
-            bookingStmt.executeUpdate();
+
             int affectedRows = bookingStmt.executeUpdate();
             if (affectedRows == 0) {
                 throw new SQLException("Creating trip failed, no rows affected.");
