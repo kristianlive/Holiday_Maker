@@ -14,13 +14,14 @@ Connection conn = db.connectToDb();
 Statement stmt = null;
 ResultSet rs = null;
     @Override
-    public User get(Long id) {
+    public User get(int id) {
         User user = null;
-        try {
-            conn = db.connectToDb();
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT * FROM users WHERE id = " + id);
-            while (rs.next()) {
+        try (Connection conn = db.connectToDb();
+             PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM users WHERE id = ?")) {
+            preparedStatement.setInt(1, id);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if (rs.next()) {
                 user = User.builder()
                         .id(rs.getInt("id"))
                         .firstName(rs.getString("first_name"))
@@ -31,10 +32,13 @@ ResultSet rs = null;
             }
 
         } catch (SQLException ex) {
-            System.out.println("Something went wrong: " + ex.getMessage());
+            // Handle the exception according to your application's requirements
+            // For example: Log the error or throw a custom exception
+            System.out.println("Error retrieving user from the database: " + ex.getMessage());
         }
         return user;
     }
+
 
     @Override
     public void add(User user) {
