@@ -2,8 +2,6 @@ package org.example.repository.bookingRepo;
 
 import org.example.db.Database;
 import org.example.entity.Bookings;
-import org.example.entity.PackageTrip;
-import org.example.entity.Trip;
 import org.example.entity.User;
 import org.example.repository.packageTripRepo.PackageTripRepositoryImp;
 import org.example.repository.tripRepo.TripRepositoryImp;

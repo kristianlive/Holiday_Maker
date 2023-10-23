@@ -1,7 +1,7 @@
 package org.example.services;
 
 
-import org.example.entity.Trip;
+import org.example.entity.CustomTrip;
 import org.example.entity.Addon;
 import org.example.repository.addonRepo.AddonRepository;
 
@@ -10,15 +10,16 @@ import java.util.Optional;
 
 public class AddonService {
     private final AddonRepository addonRepository;
-    private List<Trip> trips;
+    private List<CustomTrip> customTrips;
 
     public AddonService(AddonRepository addonRepository) {
         this.addonRepository = addonRepository;
     }
 
 
-    public void findById(Long id) {
-        System.out.println(addonRepository.findById(id));
+    public Addon findById(Long id) {
+        /*System.out.println(addonRepository.findById(id));*/
+        return addonRepository.findById(id);
     }
 
     public void addAddon(Addon Addon) {
@@ -50,9 +51,10 @@ public class AddonService {
 
     public void getAllAddons() {
        var addons = addonRepository.getAllAddon();
-        for (   var Addon: addons) {
-            System.out.println(Addon);
+        for (Addon addon: addons) {
+            System.out.println(addon);
         }
-        System.out.println("All Addons");
+
     }
+
 }

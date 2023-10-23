@@ -1,8 +1,8 @@
 package org.example.repository.destinationRepo;
 
 import org.example.db.Database;
+import org.example.entity.Accomodation;
 import org.example.entity.Destination;
-import org.example.entity.Trip;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,5 +35,24 @@ public class DestinationRepositoryImp implements DestinationRepository{
             System.out.println(e.getMessage());
         }
         return destinations;
+    }
+    @Override
+    public Destination get(int id) {
+        Destination destination = null;
+        try {
+           Connection conn = db.connectToDb();
+           Statement stmt = conn.createStatement();
+           ResultSet rs = stmt.executeQuery("SELECT * FROM destination WHERE id = " + id);
+            if (rs.next()) {
+                destination = Destination.builder()
+                        .id(rs.getInt("id"))
+                        .city(rs.getString("city"))
+                        .price(rs.getDouble("price"))
+                        .build();
+            }
+        } catch (SQLException ex) {
+            System.out.println("Something went wrong: " + ex.getMessage());
+        }
+        return destination;
     }
 }

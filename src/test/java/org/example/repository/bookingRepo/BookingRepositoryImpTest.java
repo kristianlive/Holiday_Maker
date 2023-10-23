@@ -1,11 +1,7 @@
 package org.example.repository.bookingRepo;
 
 import org.example.db.Database;
-import org.example.entity.Bookings;
-import org.example.entity.Trip;
-import org.example.entity.User;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;

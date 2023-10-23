@@ -1,7 +1,10 @@
 package org.example.repository.tripRepo;
 
 import org.example.db.Database;
-import org.example.entity.Trip;
+import org.example.entity.Activity;
+import org.example.entity.Addon;
+import org.example.entity.Bookings;
+import org.example.entity.CustomTrip;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,60 +15,164 @@ public class TripRepositoryImp implements TripRepository {
     Connection conn = db.connectToDb();
     Statement stmt = null;
     ResultSet rs = null;
+
     @Override
-    public Trip get(Long id) {
-        String sql = "SELECT * FROM trips WHERE trip_id = ?";
+    public CustomTrip get(Long id) {
+        String sql = "SELECT * FROM custom_trips WHERE trip_id = ?";
+        CustomTrip customTrip = null;
+
         try (Connection conn = db.connectToDb();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setLong(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                Trip trip = new Trip();
-                trip.setId(rs.getLong("trip_id"));
-                trip.setName(rs.getString("name"));
-                trip.setPrice(rs.getDouble("price"));
-                return trip;
+                customTrip = extractCustomTripFromResultSet(rs);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return null;
+
+        return customTrip;
     }
 
-    @Override
-    public void add(Trip trip) {
-        String sql = "INSERT INTO trips (name, price, accommodation_id) VALUES (?, ?, ?, ?)";
-        try (Connection conn = db.connectToDb();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, trip.getName());
-            stmt.setDouble(2, trip.getPrice());
-            stmt.setLong(4, trip.getAccomodation().getId());
+    private CustomTrip extractCustomTripFromResultSet(ResultSet rs) throws SQLException {
+        CustomTrip customTrip = new CustomTrip();
+        customTrip.setId(rs.getLong("trip_id"));
+        customTrip.setTotalPrice(rs.getDouble("totalprice"));
 
-            int affectedRows = stmt.executeUpdate();
+        List<Activity> activities = fetchActivitiesForCustomTrip(customTrip.getId());
+        customTrip.setActivities(activities);
+
+        List<Addon> addons = fetchAddonsForCustomTrip(customTrip.getId());
+        customTrip.setAddons(addons);
+
+        customTrip.setAccommodation(rs.getInt("accommodation_id"));
+        customTrip.setDestination(rs.getInt("destination_id"));
+
+        return customTrip;
+    }
+
+    private List<Activity> fetchActivitiesForCustomTrip(Long customTripId) {
+        String sql = "SELECT * FROM trip_activities WHERE custom_trips_id = ?";
+        List<Activity> activities = new ArrayList<>();
+
+        try (Connection conn = db.connectToDb();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, customTripId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Activity activity = new Activity();
+                activity.setId(rs.getLong("activity_id"));
+                // Retrieve other activity properties from the result set if needed
+                activities.add(activity);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return activities;
+    }
+
+    private List<Addon> fetchAddonsForCustomTrip(Long customTripId) {
+        String sql = "SELECT * FROM trip_addons WHERE custom_trips_id = ?";
+        List<Addon> addons = new ArrayList<>();
+
+        try (Connection conn = db.connectToDb();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, customTripId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Addon addon = new Addon();
+                addon.setId(rs.getLong("addon_id"));
+                // Retrieve other addon properties from the result set if needed
+                addons.add(addon);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return addons;
+    }
+
+
+    @Override
+    public void add(CustomTrip customTrip) {
+        String tripSql = "INSERT INTO custom_trips (totalprice, accommodation_id, destination_id) VALUES (?, ?, ?)";
+        String activitySql = "INSERT INTO trip_activities (custom_trips_id, activity_id) VALUES (?, ?)";
+        String addonSql = "INSERT INTO trip_addons (custom_trips_id, addon_id) VALUES (?, ?)";
+
+        try (
+                PreparedStatement tripStmt = conn.prepareStatement(tripSql, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement activityStmt = conn.prepareStatement(activitySql);
+                PreparedStatement addonStmt = conn.prepareStatement(addonSql)) {
+
+            // Insert into trips table
+            tripStmt.setDouble(1, customTrip.getTotalPrice());
+            tripStmt.setLong(2, customTrip.getAccommodation());
+            tripStmt.setLong(3, customTrip.getDestination());
+
+            int affectedRows = tripStmt.executeUpdate();
             if (affectedRows == 0) {
                 throw new SQLException("Creating trip failed, no rows affected.");
             }
 
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+            try (ResultSet generatedKeys = tripStmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    trip.setId(generatedKeys.getLong(1));
+                    customTrip.setId(generatedKeys.getLong(1));
                 } else {
                     throw new SQLException("Creating trip failed, no ID obtained.");
                 }
             }
+
+            // Insert activities into TripActivities table
+            for (Activity activity : customTrip.getActivities()) {
+                activityStmt.setLong(1, customTrip.getId());
+                activityStmt.setLong(2, activity.getId());
+                activityStmt.executeUpdate();
+            }
+
+            // Insert addons into TripAddons table
+            for (Addon addon : customTrip.getAddons()) {
+                addonStmt.setLong(1, customTrip.getId());
+                addonStmt.setLong(2, addon.getId());
+                addonStmt.executeUpdate();
+            }
+
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
+    public void addBooking(int user_id, long custom_trips_id) {
+        String bookingSql = "INSERT INTO bookings (user_id, custom_trips_id) VALUES (?, ?)";
+        try {
+            PreparedStatement bookingStmt = conn.prepareStatement(bookingSql);
+            bookingStmt.setInt(1, user_id);
+            bookingStmt.setLong(2, custom_trips_id);
+
+
+            bookingStmt.executeUpdate();
+            int affectedRows = bookingStmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Creating trip failed, no rows affected.");
+            }
+
+        } catch (SQLException exception) {
+            System.out.println(exception.getMessage());
+        }
+    }
+
+
     @Override
-    public void update(Trip trip) {
-        String sql = "UPDATE trips SET name = ?, price = ?, WHERE trip_id = ?";
+    public void update(CustomTrip customTrip) {
+        String sql = "UPDATE custom_trips SET totalprice = ?, accommodation_id = ?, destination_id = ? WHERE trip_id = ?";
         try (Connection conn = db.connectToDb();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, trip.getName());
-            stmt.setDouble(2, trip.getPrice());
-            stmt.setLong(4, trip.getId());
+            stmt.setDouble(1, customTrip.getTotalPrice());
+            stmt.setLong(2, customTrip.getAccommodation());
+            stmt.setLong(3, customTrip.getDestination());
+            stmt.setLong(4, customTrip.getId());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -77,13 +184,12 @@ public class TripRepositoryImp implements TripRepository {
     }
 
 
-
     @Override
-    public void remove(Trip trip) {
+    public void remove(CustomTrip customTrip) {
         String sql = "DELETE FROM trips WHERE trip_id = ?";
         try (Connection conn = db.connectToDb();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setLong(1, trip.getId());
+            stmt.setLong(1, customTrip.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -91,25 +197,24 @@ public class TripRepositoryImp implements TripRepository {
     }
 
 
-   @Override
-   public List<Trip> getAllTrips() {
-       List<Trip> trips = new ArrayList<>();
-       String sql = "SELECT * FROM trips";
-       try (Connection conn = db.connectToDb();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql)) {
-           while (rs.next()) {
-               Trip trip = Trip.builder()
-                       .id(rs.getLong("trip_id"))
-                       .name(rs.getString("name"))
-                       .price(rs.getDouble("price"))
-                       .build();
-               trips.add(trip);
-           }
-       } catch (SQLException e) {
-           System.out.println(e.getMessage());
-       }
-       return trips;
-   }
+    @Override
+    public List<CustomTrip> getAllTrips() {
+        List<CustomTrip> customTrips = new ArrayList<>();
+        String sql = "SELECT * FROM custom_trips";
+        try (Connection conn = db.connectToDb();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                CustomTrip customTrip = CustomTrip.builder()
+                        .id(rs.getLong("trip_id"))
+                        .totalPrice(rs.getDouble("totalprice"))
+                        .build();
+                customTrips.add(customTrip);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return customTrips;
+    }
 
 }

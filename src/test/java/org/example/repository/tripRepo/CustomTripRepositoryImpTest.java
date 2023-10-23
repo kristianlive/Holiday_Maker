@@ -1,11 +1,10 @@
 package org.example.repository.tripRepo;
 
 import org.example.db.Database;
-import org.example.entity.Trip;
+import org.example.entity.CustomTrip;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -16,9 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class TripRepositoryImpTest {
+class CustomTripRepositoryImpTest {
 
     @InjectMocks
     private TripRepositoryImp tripRepository;
@@ -51,60 +48,60 @@ class TripRepositoryImpTest {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
 
-        Trip expectedTrip = new Trip();
-        expectedTrip.setId(1L);
-        expectedTrip.setName("Test Trip");
-        expectedTrip.setPrice(100.0);
+        CustomTrip expectedCustomTrip = new CustomTrip();
+        expectedCustomTrip.setId(1L);
+        expectedCustomTrip.setName("Test Trip");
+        expectedCustomTrip.setPrice(100.0);
 
-        when(resultSet.getLong("trip_id")).thenReturn(expectedTrip.getId());
-        when(resultSet.getString("name")).thenReturn(expectedTrip.getName());
-        when(resultSet.getDouble("price")).thenReturn(expectedTrip.getPrice());
+        when(resultSet.getLong("trip_id")).thenReturn(expectedCustomTrip.getId());
+        when(resultSet.getString("name")).thenReturn(expectedCustomTrip.getName());
+        when(resultSet.getDouble("price")).thenReturn(expectedCustomTrip.getPrice());
 
-        Trip result = tripRepository.get(1L);
+        CustomTrip result = tripRepository.get(1L);
 
-        assertEquals(expectedTrip, result);
+        assertEquals(expectedCustomTrip, result);
     }
 
     @Test
     public void add_withValidTrip_insertsTrip() throws SQLException {
-        Trip trip = new Trip();
-        trip.setName("Test Trip");
-        trip.setPrice(100.0);
+        CustomTrip customTrip = new CustomTrip();
+        customTrip.setName("Test Trip");
+        customTrip.setPrice(100.0);
 
         when(conn.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
 
-        tripRepository.add(trip);
+        tripRepository.add(customTrip);
 
         verify(preparedStatement, times(1)).executeUpdate();
     }
 
     @Test
     public void update_withValidTrip_updatesTrip() throws SQLException {
-        Trip trip = new Trip();
-        trip.setId(1L);
-        trip.setName("Updated Trip");
-        trip.setPrice(150.0);
+        CustomTrip customTrip = new CustomTrip();
+        customTrip.setId(1L);
+        customTrip.setName("Updated Trip");
+        customTrip.setPrice(150.0);
 
         when(conn.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
 
-        tripRepository.update(trip);
+        tripRepository.update(customTrip);
 
         verify(preparedStatement, times(1)).executeUpdate();
     }
 
     @Test
     public void remove_withValidTrip_removesTrip() throws SQLException {
-        Trip trip = new Trip();
-        trip.setId(1L);
-        trip.setName("Test Trip");
-        trip.setPrice(100.0);
+        CustomTrip customTrip = new CustomTrip();
+        customTrip.setId(1L);
+        customTrip.setName("Test Trip");
+        customTrip.setPrice(100.0);
 
         when(conn.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
 
-        tripRepository.remove(trip);
+        tripRepository.remove(customTrip);
 
         verify(preparedStatement, times(1)).executeUpdate();
     }
@@ -114,25 +111,25 @@ class TripRepositoryImpTest {
         when(conn.createStatement()).thenReturn(statement); // Assuming you have mocked Statement as 'statement'
         when(statement.executeQuery(anyString())).thenReturn(resultSet);
 
-        Trip trip1 = new Trip();
-        trip1.setId(1L);
-        trip1.setName("Trip One");
-        trip1.setPrice(100.0);
+        CustomTrip customTrip1 = new CustomTrip();
+        customTrip1.setId(1L);
+        customTrip1.setName("Trip One");
+        customTrip1.setPrice(100.0);
 
-        Trip trip2 = new Trip();
-        trip2.setId(2L);
-        trip2.setName("Trip Two");
-        trip2.setPrice(150.0);
+        CustomTrip customTrip2 = new CustomTrip();
+        customTrip2.setId(2L);
+        customTrip2.setName("Trip Two");
+        customTrip2.setPrice(150.0);
 
         when(resultSet.next()).thenReturn(true, true, false); // Simulate two rows in result set
-        when(resultSet.getLong("trip_id")).thenReturn(trip1.getId(), trip2.getId());
-        when(resultSet.getString("name")).thenReturn(trip1.getName(), trip2.getName());
-        when(resultSet.getDouble("price")).thenReturn(trip1.getPrice(), trip2.getPrice());
+        when(resultSet.getLong("trip_id")).thenReturn(customTrip1.getId(), customTrip2.getId());
+        when(resultSet.getString("name")).thenReturn(customTrip1.getName(), customTrip2.getName());
+        when(resultSet.getDouble("price")).thenReturn(customTrip1.getPrice(), customTrip2.getPrice());
 
-        List<Trip> result = tripRepository.getAllTrips();
+        List<CustomTrip> result = tripRepository.getAllTrips();
 
         assertEquals(2, result.size());
-        assertEquals(trip1, result.get(0));
-        assertEquals(trip2, result.get(1));
+        assertEquals(customTrip1, result.get(0));
+        assertEquals(customTrip2, result.get(1));
     }
 }

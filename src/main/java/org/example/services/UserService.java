@@ -5,16 +5,14 @@ import org.example.entity.User;
 import org.example.repository.userRepo.UserRepository;
 
 
-import org.example.entity.Trip;
-import org.example.entity.User;
-import org.example.repository.userRepo.UserRepository;
+import org.example.entity.CustomTrip;
 
 import java.util.List;
 import java.util.Optional;
 
 public class UserService {
     private final UserRepository userRepository;
-    private List<Trip> trips;
+    private List<CustomTrip> customTrips;
 
 
     public UserService(UserRepository userRepository) {

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface DestinationRepository {
     List<Destination> getAllDestinations();
+    Destination get(int id);
 }
