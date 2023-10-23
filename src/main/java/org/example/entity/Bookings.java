@@ -10,5 +10,6 @@ import lombok.*;
 public class Bookings {
     private Long id;
     private User userId;
-    private Trip tripId;
+    private int customTripId;
+    private int packageTripId;
 }
