@@ -88,17 +88,15 @@ public class TripPlanner {
 
         int choice = Integer.parseInt(scanner.nextLine());
 
-        switch (choice) {
-            case 1-10:
-                // processBeachVacation();
-                break;
-            case 11:
-                mainMenu();
-                break;
-            default:
-                System.out.println("Invalid choice. Please try again.");
-                packageMenu();
+        if (choice >= 1 && choice <= 10) {
+            // processBeachVacation();
+        } else if (choice == 11) {
+            mainMenu();
+        } else {
+            System.out.println("Invalid choice. Please try again.");
+            packageMenu();
         }
+
     }
 
     private void customMenu() {
