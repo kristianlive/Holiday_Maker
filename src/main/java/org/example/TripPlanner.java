@@ -65,7 +65,7 @@ public class TripPlanner {
         System.out.println("Registration Successful!");
         System.out.println("-----------------------------");
         System.out.println(currentUser);
-        userService.getAllUsers();
+
     }
 
     private void mainMenu() {
