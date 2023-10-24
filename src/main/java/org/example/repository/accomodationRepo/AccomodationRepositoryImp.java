@@ -109,7 +109,7 @@ public class AccomodationRepositoryImp implements AccomodationRepository {
         List<Accomodation> accomodations = new ArrayList<>();
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT * FROM accomodations");
+            rs = stmt.executeQuery("SELECT * FROM accommodation");
             while (rs.next()) {
                 accomodations.add(Accomodation.builder()
                         .id(rs.getLong("id"))

@@ -12,8 +12,8 @@ public class ActivityService {
         this.activityRepository = activityRepository;
     }
 
-    public void findById(Long id) {
-        System.out.println(activityRepository.get(id));
+    public Activity findById(Long id) {
+        return activityRepository.get(id);
     }
 
     public void addActivity(Activity activity) {

@@ -16,11 +16,12 @@ public class AddonRepositoryImp implements AddonRepository {
 
     @Override
     public Addon findById(Long id) {
-       Addon addon = null;
-        try {
-            conn = db.connectToDb();
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT * FROM addon WHERE id = " + id);
+        Addon addon = null;
+        String sql = "SELECT * FROM addon WHERE id = ?";
+        try (Connection conn = db.connectToDb();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 addon = Addon.builder()
                         .id(rs.getLong("id"))
@@ -28,12 +29,12 @@ public class AddonRepositoryImp implements AddonRepository {
                         .price(rs.getDouble("price"))
                         .build();
             }
-
         } catch (SQLException ex) {
             System.out.println("Something went wrong: " + ex.getMessage());
         }
         return addon;
     }
+
 
 
     @Override

@@ -7,10 +7,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Activity {
-    private Long id;
-    private String title;
+public class Destination {
+    private int id;
+    private String city;
     private double price;
-    private CustomTrip customTrip;
-
 }

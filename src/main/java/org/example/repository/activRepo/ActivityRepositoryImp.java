@@ -14,7 +14,7 @@ public class ActivityRepositoryImp implements ActivityRepository {
     @Override
     public Activity get(Long id) {
         try {
-            String selectQuery = "SELECT * FROM activities WHERE id = ?";
+            String selectQuery = "SELECT * FROM activity WHERE id = ?";
             PreparedStatement preparedStatement = conn.prepareStatement(selectQuery);
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -36,7 +36,7 @@ public class ActivityRepositoryImp implements ActivityRepository {
     @Override
     public void add(Activity activity) {
         try {
-            String insertQuery = "INSERT INTO activities (title, price) VALUES (?, ?)";
+            String insertQuery = "INSERT INTO activity (title, price) VALUES (?, ?)";
             PreparedStatement preparedStatement = conn.prepareStatement(insertQuery);
             preparedStatement.setString(1, activity.getTitle());
             preparedStatement.setDouble(2, activity.getPrice());
@@ -63,7 +63,7 @@ public class ActivityRepositoryImp implements ActivityRepository {
     @Override
     public void remove(Activity activity) {
         try {
-            String deleteQuery = "DELETE FROM activities WHERE id = ?";
+            String deleteQuery = "DELETE FROM activity WHERE id = ?";
             PreparedStatement preparedStatement = conn.prepareStatement(deleteQuery);
             preparedStatement.setLong(1, activity.getId());
             preparedStatement.executeUpdate();
@@ -76,7 +76,7 @@ public class ActivityRepositoryImp implements ActivityRepository {
     public List<Activity> getAllActivity() {
         List<Activity> activities = new ArrayList<>();
         try {
-            String selectQuery = "SELECT * FROM activities";
+            String selectQuery = "SELECT * FROM activity";
             PreparedStatement preparedStatement = conn.prepareStatement(selectQuery);
             ResultSet resultSet = preparedStatement.executeQuery();
 
