@@ -110,9 +110,9 @@ public class BookingRepositoryImp implements BookingRepository {
         return parsedTitles;
     }
 
-
-    public List<PackageTrip> getPackageTripDetailsForUser(int userId) {
-        List<PackageTrip> packageTripList = new ArrayList<>();
+    @Override
+    public List<PackageTripDetails> getPackageTripDetailsForUser(int userId) {
+        List<PackageTripDetails> packageTripDetailsList = new ArrayList<>();
         try {
             String query = "SELECT b.id as bookings_id, pt.description, a.title as addon_title, ac.type as accommodation_type, act.title as activity_title, pt.destination, pt.price as totalprice " +
                     "FROM bookings b " +
@@ -125,7 +125,7 @@ public class BookingRepositoryImp implements BookingRepository {
                 preparedStatement.setInt(1, userId);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while (resultSet.next()) {
-                    int bookingsId = resultSet.getInt("bookings_id");
+                    Long bookingsId = resultSet.getLong("bookings_id");
                     String description = resultSet.getString("description");
                     String addonTitle = resultSet.getString("addon_title");
                     String accommodationType = resultSet.getString("accommodation_type");
@@ -133,20 +133,17 @@ public class BookingRepositoryImp implements BookingRepository {
                     String destination = resultSet.getString("destination");
                     double totalprice = resultSet.getDouble("totalprice");
 
-                    /*Addon addon = parseAddonTitle(addonTitle);
-                    Accomodation accommodation = parseAccommodationType(accommodationType);
-                    Activity activity = parseActivityTitles(activityTitle);*/
-
-                    /*PackageTrip packageTrip = new PackageTrip((long) bookingsId, description, addon, accommodation, activity, destination, totalprice);*/
-                    /*packageTripList.add(packageTrip);*/
+                    PackageTripDetails packageTripDetails = new PackageTripDetails(bookingsId, description, addonTitle, accommodationType, activityTitle, destination, totalprice);
+                    packageTripDetailsList.add(packageTripDetails);
                 }
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
             // Handle the exception as needed
         }
-        return packageTripList;
+        return packageTripDetailsList;
     }
+
 
     @Override
     public void update(Bookings booking) {

@@ -2,6 +2,7 @@ package org.example.services;
 
 import org.example.entity.Bookings;
 import org.example.entity.CustomTripDetails;
+import org.example.entity.PackageTripDetails;
 import org.example.entity.User;
 import org.example.repository.bookingRepo.BookingRepository;
 
@@ -50,6 +51,10 @@ public class BookingService {
     public List<CustomTripDetails> getAllCustomTripsFromUser(int userId) {
         List<CustomTripDetails> customTripDetailsList = bookingRepository.getCustomTripDetailsForUser(userId);
         return customTripDetailsList;
+    }
+    public List<PackageTripDetails> getAllPackageTripsFromUser(int userId) {
+        List<PackageTripDetails> packageTripDetailsList = bookingRepository.getPackageTripDetailsForUser(userId);
+        return packageTripDetailsList;
     }
 
 }

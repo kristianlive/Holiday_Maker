@@ -99,29 +99,15 @@ public class TripPlanner {
     private void bookingMenu() {
     // Get all bookings associated with the user
        List<CustomTripDetails> customTripDetailsList =  bookingService.getAllCustomTripsFromUser(currentUser);
-        // Print each CustomTripDetails object on a new line
         for (CustomTripDetails customTripDetails : customTripDetailsList) {
             System.out.println(customTripDetails);
         }
-        mainMenu();
-    }
 
-    private User getUserFromInput() {
-
-        System.out.print("Enter user ID: ");
-        int userId = Integer.parseInt(scanner.nextLine());
-
-        // Use UserService to get the user by ID
-        User user = userService.getUser(userId);
-
-
-        if (user == null) {
-            System.out.println("User not found. Please try again.");
-            // Retry getting the user if not found
-            return getUserFromInput();
+        List<PackageTripDetails> packageTripDetailsList = bookingService.getAllPackageTripsFromUser(currentUser);
+        for (PackageTripDetails packageTripDetails : packageTripDetailsList) {
+            System.out.println(packageTripDetails);
         }
-        System.out.println("Hello " + user.getFirstName());
-        return user;
+        mainMenu();
     }
 
     private void packageMenu() {
