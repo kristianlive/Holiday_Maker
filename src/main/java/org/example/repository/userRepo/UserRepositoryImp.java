@@ -41,7 +41,35 @@ ResultSet rs = null;
 
 
     @Override
-    public void add(User user) {
+    public int add(User user) {
+        int userId = -1; // Initialize with a default value to denote no ID
+        try {
+            String insertQuery = "INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
+
+            try (PreparedStatement preparedStatement = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+                preparedStatement.setString(1, user.getFirstName());
+                preparedStatement.setString(2, user.getLastName());
+                preparedStatement.setString(3, user.getEmail());
+                preparedStatement.setString(4, user.getPassword());
+
+                preparedStatement.executeUpdate();
+
+                // Now, retrieve the generated ID
+                try (ResultSet rs = preparedStatement.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        userId = rs.getInt(1);
+                    }
+                }
+
+            }
+        } catch (SQLException ex) {
+            System.out.println("Something went wrong: " + ex.getMessage());
+        }
+        System.out.println("User added");
+        return userId; // Return the ID (or -1 if something went wrong)
+    }
+
+    /*  public void add(User user) {
         try {
             String insertQuery = "INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
 
@@ -58,7 +86,7 @@ ResultSet rs = null;
 
         }
     }
-
+*/
     @Override
     public void update(User user) {
 

@@ -19,6 +19,8 @@ import java.util.Scanner;
 
 public class TripPlanner {
 
+    private int currentUser;
+
     private Scanner scanner;
 
     public TripPlanner() {
@@ -38,7 +40,7 @@ public class TripPlanner {
         System.out.println("Welcome to the Trip Planner!");
         System.out.println("-----------------------------");
 
-        /*registerUser();*/
+        registerUser();
         mainMenu();
     }
 
@@ -59,9 +61,10 @@ public class TripPlanner {
 
         // Call the method to store the user information in the database.
         // saveUserInfo(firstName, lastName, email, password);
-        userService.addUser(User.builder().firstName(firstName).lastName(lastName).email(email).password(password).build());
+        currentUser = userService.addUser(User.builder().firstName(firstName).lastName(lastName).email(email).password(password).build());
         System.out.println("Registration Successful!");
         System.out.println("-----------------------------");
+        System.out.println(currentUser);
         userService.getAllUsers();
     }
 
