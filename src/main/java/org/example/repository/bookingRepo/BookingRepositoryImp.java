@@ -32,7 +32,7 @@ public class BookingRepositoryImp implements BookingRepository {
     public boolean addCustomTrip(Bookings booking) {
         boolean isSuccess = false;
         try (PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO bookings (user_id, custom_trips_id) VALUES (?, ?)")) {
-            preparedStatement.setLong(1, booking.getUserId().getId());
+            preparedStatement.setLong(1, booking.getUserId());
 
             Integer customTripId = booking.getCustomTripId();
             preparedStatement.setInt(2, customTripId);
@@ -49,7 +49,7 @@ public class BookingRepositoryImp implements BookingRepository {
     public boolean addPackageTripToBooking(Bookings booking) {
         boolean isSuccess = false;
         try (PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO bookings (user_id, package_trips_id) VALUES (?, ?)")) {
-            preparedStatement.setLong(1, booking.getUserId().getId());
+            preparedStatement.setLong(1, booking.getUserId());
             int packageTripId = booking.getPackageTripId();
             preparedStatement.setInt(2, packageTripId);
 
@@ -154,7 +154,7 @@ public class BookingRepositoryImp implements BookingRepository {
             String updateQuery = "UPDATE bookings SET user_id = ?, custom_trips_id = ?, package_trips_id = ? WHERE id = ?";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(updateQuery)) {
-                preparedStatement.setLong(1, booking.getUserId().getId());
+                preparedStatement.setLong(1, booking.getUserId());
                 preparedStatement.setLong(2, booking.getCustomTripId());
                 preparedStatement.setLong(3, booking.getPackageTripId());
                 preparedStatement.setLong(4, booking.getId());

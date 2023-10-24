@@ -18,11 +18,11 @@ public class BookingService {
     }
 
     // Add a trip to the cart
-    public void addToCart(int choice, User user) {
+    public void addToCart(int choice, int userId) {
         System.out.println("Add to cart method");
 
         Bookings booking = Bookings.builder()
-                .userId(user)
+                .userId(userId)
                 .packageTripId(choice)
                 .build();
 

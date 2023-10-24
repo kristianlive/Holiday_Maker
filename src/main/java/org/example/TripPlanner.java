@@ -98,11 +98,12 @@ public class TripPlanner {
 
     private void bookingMenu() {
     // Get all bookings associated with the user
-       List<CustomTripDetails> customTripDetailsList =  bookingService.getAllCustomTripsFromUser(30);
+       List<CustomTripDetails> customTripDetailsList =  bookingService.getAllCustomTripsFromUser(currentUser);
         // Print each CustomTripDetails object on a new line
         for (CustomTripDetails customTripDetails : customTripDetailsList) {
             System.out.println(customTripDetails);
         }
+        mainMenu();
     }
 
     private User getUserFromInput() {
@@ -125,7 +126,6 @@ public class TripPlanner {
 
     private void packageMenu() {
         System.out.println("-----------------------------");
-        User user = getUserFromInput();
         System.out.println("-----------------------------");
         System.out.println("Choose a package trip, 1-10:");
         System.out.println("0 to return to main menu");
@@ -135,7 +135,7 @@ public class TripPlanner {
         int choice = Integer.parseInt(scanner.nextLine());
 
         if (choice >= 1 && choice <= 10) {
-            addPackageTripToBooking(choice, user);
+            addPackageTripToBooking(choice, currentUser);
         } else if (choice == 0) {
             mainMenu();
         } else {
@@ -144,13 +144,13 @@ public class TripPlanner {
         }
     }
 
-    private void addPackageTripToBooking(int choice, User user) {
-        bookingService.addToCart(choice, user);
+    private void addPackageTripToBooking(int choice, int userId) {
+        bookingService.addToCart(choice, userId);
     }
 
     private void customMenu() {
         System.out.println("-----------------------------");
-        User user = getUserFromInput();
+
         // Get destination ID from user input
         System.out.print("Enter destination ID: ");
         int destinationId = addDestinationToCustomTrip();
@@ -190,7 +190,7 @@ public class TripPlanner {
 
 
         tripService.addTrip(customTrip);
-        tripService.addBooking(user.getId(), customTrip.getId());
+        tripService.addBooking(currentUser, customTrip.getId());
         System.out.println("Trip created successfully!");
 
         System.out.println("0. Go back to the main menu");
