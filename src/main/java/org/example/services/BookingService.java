@@ -1,6 +1,8 @@
 package org.example.services;
 
 import org.example.entity.Bookings;
+import org.example.entity.CustomTripDetails;
+import org.example.entity.PackageTripDetails;
 import org.example.entity.User;
 import org.example.repository.bookingRepo.BookingRepository;
 
@@ -17,18 +19,18 @@ public class BookingService {
     }
 
     // Add a trip to the cart
-    public void addToCart(int choice, User user) {
+    public void addToCart(int choice, int userId) {
         System.out.println("Add to cart method");
 
         Bookings booking = Bookings.builder()
-                .userId(user)
+                .userId(userId)
                 .packageTripId(choice)
                 .build();
 
         boolean successfullyAddedPackageTrip = bookingRepository.addPackageTripToBooking(booking);
         if (successfullyAddedPackageTrip) {
             System.out.println("Successfully created packageTrip");
-        }else {
+        } else {
             System.out.println("Could not create packageTrip");
         }
     }
@@ -46,6 +48,14 @@ public class BookingService {
         userCart.clear();
     }
 
+    public List<CustomTripDetails> getAllCustomTripsFromUser(int userId) {
+        List<CustomTripDetails> customTripDetailsList = bookingRepository.getCustomTripDetailsForUser(userId);
+        return customTripDetailsList;
+    }
+    public List<PackageTripDetails> getAllPackageTripsFromUser(int userId) {
+        List<PackageTripDetails> packageTripDetailsList = bookingRepository.getPackageTripDetailsForUser(userId);
+        return packageTripDetailsList;
+    }
 
 }
 

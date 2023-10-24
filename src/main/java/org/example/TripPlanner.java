@@ -13,6 +13,7 @@ import org.example.services.*;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -64,7 +65,7 @@ public class TripPlanner {
         System.out.println("Registration Successful!");
         System.out.println("-----------------------------");
         System.out.println(currentUser);
-        userService.getAllUsers();
+
     }
 
     private void mainMenu() {
@@ -97,57 +98,31 @@ public class TripPlanner {
 
     private void bookingMenu() {
     // Get all bookings associated with the user
-        /*SELECT c.trip_id, a.type, d.city,
-                (SELECT GROUP_CONCAT(DISTINCT ac.title SEPARATOR ', ') FROM trip_activities ta JOIN activity ac ON ac.id = ta.activity_id WHERE ta.custom_trips_id = c.trip_id) AS activity_titles,
-        (SELECT GROUP_CONCAT(DISTINCT ad.title SEPARATOR ', ') FROM trip_addons tad JOIN addon ad ON ad.id = tad.addon_id WHERE tad.custom_trips_id = c.trip_id) AS addon_titles,
-        c.totalprice
-        FROM bookings b
-        JOIN custom_trips c ON b.custom_trips_id = c.trip_id
-        JOIN accommodation a ON c.accommodation_id = a.id
-        JOIN destination d ON c.destination_id = d.id
-        WHERE b.user_id = 30;
-
-        SELECT b.id as bookings_id, pt.description, a.title as addon_title, ac.type as accommodation_type, act.title as activity_title,  pt.destination, pt.price as totalprice
-        FROM bookings b
-        LEFT JOIN package_trips pt ON b.package_trips_id = pt.id
-        LEFT JOIN addon a ON pt.addon_id = a.id
-        LEFT JOIN accommodation ac ON pt.accommodation_id = ac.id
-        LEFT JOIN activity act ON pt.activity_id = act.id
-        WHERE b.user_id = 30 AND b.custom_trips_id IS NULL;*/
-    }
-
-    private User getUserFromInput() {
-
-        System.out.print("Enter user ID: ");
-        int userId = Integer.parseInt(scanner.nextLine());
-
-        // Use UserService to get the user by ID
-        User user = userService.getUser(userId);
-
-
-        if (user == null) {
-            System.out.println("User not found. Please try again.");
-            // Retry getting the user if not found
-            return getUserFromInput();
+       List<CustomTripDetails> customTripDetailsList =  bookingService.getAllCustomTripsFromUser(currentUser);
+        for (CustomTripDetails customTripDetails : customTripDetailsList) {
+            System.out.println(customTripDetails);
         }
-        System.out.println("Hello " + user.getFirstName());
-        return user;
+
+        List<PackageTripDetails> packageTripDetailsList = bookingService.getAllPackageTripsFromUser(currentUser);
+        for (PackageTripDetails packageTripDetails : packageTripDetailsList) {
+            System.out.println(packageTripDetails);
+        }
+        mainMenu();
     }
 
     private void packageMenu() {
         System.out.println("-----------------------------");
-        User user = getUserFromInput();
         System.out.println("-----------------------------");
         System.out.println("Choose a package trip, 1-10:");
-        System.out.println("11 to return to main menu");
+        System.out.println("0 to return to main menu");
 
         packageTripsService.getAllPackageTrips();
 
         int choice = Integer.parseInt(scanner.nextLine());
 
         if (choice >= 1 && choice <= 10) {
-            addPackageTripToBooking(choice, user);
-        } else if (choice == 11) {
+            addPackageTripToBooking(choice, currentUser);
+        } else if (choice == 0) {
             mainMenu();
         } else {
             System.out.println("Invalid choice. Please try again.");
@@ -155,13 +130,13 @@ public class TripPlanner {
         }
     }
 
-    private void addPackageTripToBooking(int choice, User user) {
-        bookingService.addToCart(choice, user);
+    private void addPackageTripToBooking(int choice, int userId) {
+        bookingService.addToCart(choice, userId);
     }
 
     private void customMenu() {
         System.out.println("-----------------------------");
-        User user = getUserFromInput();
+
         // Get destination ID from user input
         System.out.print("Enter destination ID: ");
         int destinationId = addDestinationToCustomTrip();
@@ -201,7 +176,7 @@ public class TripPlanner {
 
 
         tripService.addTrip(customTrip);
-        tripService.addBooking(user.getId(), customTrip.getId());
+        tripService.addBooking(currentUser, customTrip.getId());
         System.out.println("Trip created successfully!");
 
         System.out.println("0. Go back to the main menu");
