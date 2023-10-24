@@ -9,7 +9,9 @@ import org.example.services.TripService;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BookingRepositoryImp implements BookingRepository {
 
@@ -61,6 +63,92 @@ public class BookingRepositoryImp implements BookingRepository {
 
 
     @Override
+    public List<CustomTripDetails> getCustomTripDetailsForUser(int userId) {
+        List<CustomTripDetails> customTripDetailsList = new ArrayList<>();
+        try {
+            String query = "SELECT c.trip_id, a.type, d.city, " +
+                    "(SELECT GROUP_CONCAT(DISTINCT ac.title SEPARATOR ', ') FROM trip_activities ta JOIN activity ac ON ac.id = ta.activity_id WHERE ta.custom_trips_id = c.trip_id) AS activity_titles, " +
+                    "(SELECT GROUP_CONCAT(DISTINCT ad.title SEPARATOR ', ') FROM trip_addons tad JOIN addon ad ON ad.id = tad.addon_id WHERE tad.custom_trips_id = c.trip_id) AS addon_titles, " +
+                    "c.totalprice " +
+                    "FROM bookings b " +
+                    "JOIN custom_trips c ON b.custom_trips_id = c.trip_id " +
+                    "JOIN accommodation a ON c.accommodation_id = a.id " +
+                    "JOIN destination d ON c.destination_id = d.id " +
+                    "WHERE b.user_id = ?";
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+                preparedStatement.setInt(1, userId);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    Long tripId = resultSet.getLong("trip_id");
+                    String accommodationType = resultSet.getString("type");
+                    String city = resultSet.getString("city");
+                    String activityTitles = resultSet.getString("activity_titles");
+                    String addonTitles = resultSet.getString("addon_titles");
+                    double totalprice = resultSet.getDouble("totalprice");
+
+                    // Parse activityTitles and addonTitles into lists of strings
+                    List<String> activities = parseTitles(activityTitles);
+                    List<String> addons = parseTitles(addonTitles);
+
+                    CustomTripDetails customTripDetails = new CustomTripDetails(tripId, accommodationType, city, activities, addons, totalprice);
+                    customTripDetailsList.add(customTripDetails);
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            // Handle the exception as needed
+        }
+        return customTripDetailsList;
+    }
+
+    private List<String> parseTitles(String titles) {
+        List<String> parsedTitles = new ArrayList<>();
+        if (titles != null && !titles.isEmpty()) {
+            String[] titleArray = titles.split(", ");
+            parsedTitles.addAll(Arrays.asList(titleArray));
+        }
+        return parsedTitles;
+    }
+
+
+    public List<PackageTrip> getPackageTripDetailsForUser(int userId) {
+        List<PackageTrip> packageTripList = new ArrayList<>();
+        try {
+            String query = "SELECT b.id as bookings_id, pt.description, a.title as addon_title, ac.type as accommodation_type, act.title as activity_title, pt.destination, pt.price as totalprice " +
+                    "FROM bookings b " +
+                    "LEFT JOIN package_trips pt ON b.package_trips_id = pt.id " +
+                    "LEFT JOIN addon a ON pt.addon_id = a.id " +
+                    "LEFT JOIN accommodation ac ON pt.accommodation_id = ac.id " +
+                    "LEFT JOIN activity act ON pt.activity_id = act.id " +
+                    "WHERE b.user_id = ? AND b.custom_trips_id IS NULL";
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+                preparedStatement.setInt(1, userId);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    int bookingsId = resultSet.getInt("bookings_id");
+                    String description = resultSet.getString("description");
+                    String addonTitle = resultSet.getString("addon_title");
+                    String accommodationType = resultSet.getString("accommodation_type");
+                    String activityTitle = resultSet.getString("activity_title");
+                    String destination = resultSet.getString("destination");
+                    double totalprice = resultSet.getDouble("totalprice");
+
+                    /*Addon addon = parseAddonTitle(addonTitle);
+                    Accomodation accommodation = parseAccommodationType(accommodationType);
+                    Activity activity = parseActivityTitles(activityTitle);*/
+
+                    /*PackageTrip packageTrip = new PackageTrip((long) bookingsId, description, addon, accommodation, activity, destination, totalprice);*/
+                    /*packageTripList.add(packageTrip);*/
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            // Handle the exception as needed
+        }
+        return packageTripList;
+    }
+
+    @Override
     public void update(Bookings booking) {
         try {
             String updateQuery = "UPDATE bookings SET user_id = ?, custom_trips_id = ?, package_trips_id = ? WHERE id = ?";
@@ -96,117 +184,9 @@ public class BookingRepositoryImp implements BookingRepository {
         }
 
     }
-    public List<CustomTrip> getCustomTripDetailsForUser(int userId) {
-        List<CustomTrip> customTripDetailsList = new ArrayList<>();
-        try {
-            String query = "SELECT c.trip_id, a.type, d.city, " +
-                    "(SELECT GROUP_CONCAT(DISTINCT ac.title SEPARATOR ', ') FROM trip_activities ta JOIN activity ac ON ac.id = ta.activity_id WHERE ta.custom_trips_id = c.trip_id) AS activity_titles, " +
-                    "(SELECT GROUP_CONCAT(DISTINCT ad.title SEPARATOR ', ') FROM trip_addons tad JOIN addon ad ON ad.id = tad.addon_id WHERE tad.custom_trips_id = c.trip_id) AS addon_titles, " +
-                    "c.totalprice " +
-                    "FROM bookings b " +
-                    "JOIN custom_trips c ON b.custom_trips_id = c.trip_id " +
-                    "JOIN accommodation a ON c.accommodation_id = a.id " +
-                    "JOIN destination d ON c.destination_id = d.id " +
-                    "WHERE b.user_id = ?";
-            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-                preparedStatement.setInt(1, userId);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    int tripId = resultSet.getInt("trip_id");
-                    String accommodationType = resultSet.getString("type");
-                    String city = resultSet.getString("city");
-                    String activityTitles = resultSet.getString("activity_titles");
-                    String addonTitles = resultSet.getString("addon_titles");
-                    double totalprice = resultSet.getDouble("totalprice");
-
-                    // Parse activityTitles and addonTitles into lists of Activity and Addon objects
-                    List<Activity> activities = parseActivityTitles(activityTitles);
-                    List<Addon> addons = parseAddonTitles(addonTitles);
-
-                    CustomTrip customTripDetails = new CustomTrip(tripId, accommodationType, city, activities, addons, totalprice);
-                    customTripDetailsList.add(customTripDetails);
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-            // Handle the exception as needed
-        }
-        return customTripDetailsList;
-    }
-
-    public List<PackageTrip> getPackageTripDetailsForUser(int userId) {
-        List<PackageTrip> packageTripList = new ArrayList<>();
-        try {
-            String query = "SELECT b.id as bookings_id, pt.description, a.title as addon_title, ac.type as accommodation_type, act.title as activity_title, pt.destination, pt.price as totalprice " +
-                    "FROM bookings b " +
-                    "LEFT JOIN package_trips pt ON b.package_trips_id = pt.id " +
-                    "LEFT JOIN addon a ON pt.addon_id = a.id " +
-                    "LEFT JOIN accommodation ac ON pt.accommodation_id = ac.id " +
-                    "LEFT JOIN activity act ON pt.activity_id = act.id " +
-                    "WHERE b.user_id = ? AND b.custom_trips_id IS NULL";
-            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-                preparedStatement.setInt(1, userId);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    int bookingsId = resultSet.getInt("bookings_id");
-                    String description = resultSet.getString("description");
-                    String addonTitle = resultSet.getString("addon_title");
-                    String accommodationType = resultSet.getString("accommodation_type");
-                    String activityTitle = resultSet.getString("activity_title");
-                    String destination = resultSet.getString("destination");
-                    double totalprice = resultSet.getDouble("totalprice");
-
-                    Addon addon = parseAddonTitle(addonTitle);
-                    Accomodation accommodation = parseAccommodationType(accommodationType);
-                    Activity activity = parseActivityTitle(activityTitle);
-
-                    PackageTrip packageTrip = new PackageTrip((long) bookingsId, description, addon, accommodation, activity, destination, totalprice);
-                    packageTripList.add(packageTrip);
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-            // Handle the exception as needed
-        }
-        return packageTripList;
-    }
-
-    // Implement the parse methods for Activity, Addon, and Accommodation titles here
-
-    // ... (other methods)
-}
-
-
-
-
-
-    @Override
-    public List<Bookings> getAllBookingsFromUser(User user) {
-        List<Bookings> bookingsList = new ArrayList<>();
-        try {
-            String selectQuery = "SELECT * FROM bookings WHERE user_id = ?";
-
-            try (PreparedStatement preparedStatement = conn.prepareStatement(selectQuery)) {
-                preparedStatement.setLong(1, user.getId());
-                ResultSet resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    Long id = resultSet.getLong("id");
-                    int customTripId = resultSet.getInt("custom_trips_id");
-                    int packageTripId = resultSet.getInt("package_trips_id");
-
-                    // Assuming you have appropriate constructors for Trip classes
-                   /* tripService.getTrip(customTripId);
-                    packageTripService.getPackageTrip(packageTripId);*/
-
-                    Bookings booking = new Bookings(id, user, customTripId, packageTripId);
-                    bookingsList.add(booking);
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-            // Handle the exception as needed
-        }
-        return bookingsList;
-    }
 
 }
+
+
+
+
