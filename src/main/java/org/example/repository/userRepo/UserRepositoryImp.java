@@ -69,7 +69,7 @@ ResultSet rs = null;
         return userId; // Return the ID (or -1 if something went wrong)
     }
 
-    /*  public void add(User user) {
+  /* public void add(User user) {
         try {
             String insertQuery = "INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
 
