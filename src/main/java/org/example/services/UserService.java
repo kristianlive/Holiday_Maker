@@ -27,9 +27,9 @@ public class UserService {
         return userRepository.get(userId);
     }
 
-    public void addUser(User user) {
-        userRepository.add(user);
-        System.out.println("User added");
+    public int addUser(User user) {
+        return  userRepository.add(user);
+
     }
 
     public void updateUser(User user) {

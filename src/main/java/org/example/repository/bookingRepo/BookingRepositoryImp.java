@@ -96,7 +96,7 @@ public class BookingRepositoryImp implements BookingRepository {
         }
 
     }
-    public List<CustomTrip> getCustomTripDetailsForUser(int userId) {
+  /*  public List<CustomTrip> getCustomTripDetailsForUser(int userId) {
         List<CustomTrip> customTripDetailsList = new ArrayList<>();
         try {
             String query = "SELECT c.trip_id, a.type, d.city, " +
@@ -171,11 +171,13 @@ public class BookingRepositoryImp implements BookingRepository {
         return packageTripList;
     }
 
+
+
     // Implement the parse methods for Activity, Addon, and Accommodation titles here
 
     // ... (other methods)
 }
-
+*/
 
 
 
