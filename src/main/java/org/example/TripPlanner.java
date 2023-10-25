@@ -74,7 +74,7 @@ public class TripPlanner {
                 case 3 -> bookingMenu();
                 case 0 -> {
                     System.out.println("Thank you for using Trip Planner. Goodbye!");
-                    return;
+                    System.exit(0);
                 }
                 default -> System.out.println("Invalid choice. Please try again.");
             }
