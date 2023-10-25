@@ -1,7 +1,6 @@
 package org.example.services;
 
-import org.example.entity.Trip;
-import org.example.entity.User;
+import org.example.entity.CustomTrip;
 import org.example.repository.tripRepo.TripRepositoryImp;
 
 
@@ -15,8 +14,8 @@ public class TripService {
         this.tripRepositoryImp = tripRepositoryImp;
     }
 
-    public void addTrip(Trip trip) {
-        tripRepositoryImp.add(trip);
+    public void addTrip(CustomTrip customTrip) {
+        tripRepositoryImp.add(customTrip);
         System.out.println("trip added");
     }
 
@@ -32,19 +31,23 @@ public class TripService {
         }
 
     }
+
+    public void addBooking(int user_id, long custom_trips_id) {
+        tripRepositoryImp.addBooking(user_id, custom_trips_id);
+    }
     public void removeTrip(Long id) {
         if (tripRepositoryImp.get(id) == null) {
             System.out.println("Trip not found");
             return;
         }
-        Trip trip = tripRepositoryImp.get(id);
-        tripRepositoryImp.remove(trip);
+        CustomTrip customTrip = tripRepositoryImp.get(id);
+        tripRepositoryImp.remove(customTrip);
         System.out.println("Trip removed");
     }
-  public void updatetrip(Trip trip) {
-        Optional<Trip> tripOptional = Optional.ofNullable(tripRepositoryImp.get((long) trip.getId()));
+  public void updatetrip(CustomTrip customTrip) {
+        Optional<CustomTrip> tripOptional = Optional.ofNullable(tripRepositoryImp.get((long) customTrip.getId()));
         if (tripOptional.isPresent()) {
-            tripRepositoryImp.update(trip);
+            tripRepositoryImp.update(customTrip);
 
             System.out.println("trip updated");
         } else {

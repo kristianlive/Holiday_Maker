@@ -1,121 +1,110 @@
 package org.example;
 
-import org.example.entity.User;
+import org.example.entity.*;
+import org.example.repository.accomodationRepo.AccomodationRepositoryImp;
+import org.example.repository.activRepo.ActivityRepositoryImp;
+import org.example.repository.addonRepo.AddonRepositoryImp;
 import org.example.repository.bookingRepo.BookingRepositoryImp;
+import org.example.repository.destinationRepo.DestinationRepositoryImp;
 import org.example.repository.packageTripRepo.PackageTripRepositoryImp;
+import org.example.repository.tripRepo.TripRepositoryImp;
 import org.example.repository.userRepo.UserRepositoryImp;
-import org.example.services.BookingService;
-import org.example.services.PackageTripsServices;
-import org.example.services.UserService;
+import org.example.services.*;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
+
 
 public class TripPlanner {
 
-    private Scanner scanner;
+    private int currentUser;
+    private final Scanner scanner = new Scanner(System.in);
 
-    public TripPlanner() {
-        this.scanner = new Scanner(System.in);
-    }
-
-    UserService userService = new UserService(new UserRepositoryImp());
-    PackageTripsServices packageTripsService = new PackageTripsServices(new PackageTripRepositoryImp());
-    BookingService bookingService = new BookingService(new BookingRepositoryImp());
+    private final UserService userService = new UserService(new UserRepositoryImp());
+    private final PackageTripsServices packageTripsService = new PackageTripsServices(new PackageTripRepositoryImp());
+    private final BookingService bookingService = new BookingService(new BookingRepositoryImp());
+    private final TripService tripService = new TripService(new TripRepositoryImp());
+    private final DestinationService destinationService = new DestinationService(new DestinationRepositoryImp());
+    private final AddonService addonService = new AddonService(new AddonRepositoryImp());
+    private final ActivityService activityService = new ActivityService(new ActivityRepositoryImp());
+    private final AccomodationService accomodationService = new AccomodationService(new AccomodationRepositoryImp());
 
     public void run() {
-        System.out.println("Welcome to the Trip Planner!");
-        System.out.println("-----------------------------");
-
-        /*registerUser();*/
+        displayWelcomeMessage();
+        registerUser();
         mainMenu();
+    }
+
+    private void displayWelcomeMessage() {
+        System.out.println("Welcome to the Trip Planner!\n-----------------------------");
     }
 
     private void registerUser() {
         System.out.println("Please register before proceeding:");
-
-        System.out.print("First Name: ");
-        String firstName = scanner.nextLine();
-
-        System.out.print("Last Name: ");
-        String lastName = scanner.nextLine();
-
-        System.out.print("Email: ");
-        String email = scanner.nextLine();
-
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
-
-        // Call the method to store the user information in the database.
-        // saveUserInfo(firstName, lastName, email, password);
-        userService.addUser(User.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email)
-                .password(password)
+        currentUser = userService.addUser(User.builder()
+                .firstName(promptForInput("First Name: "))
+                .lastName(promptForInput("Last Name: "))
+                .email(promptForInput("Email: "))
+                .password(promptForInput("Password: "))
                 .build());
-        System.out.println("Registration Successful!");
-        System.out.println("-----------------------------");
-        userService.getAllUsers();
+        System.out.println("Registration Successful!\n-----------------------------");
+    }
+
+    private String promptForInput(String message) {
+        System.out.print(message);
+        return scanner.nextLine();
     }
 
     private void mainMenu() {
         while (true) {
-            System.out.println("Choose the type of trip:");
-            System.out.println("1. Package");
-            System.out.println("2. Custom");
-            System.out.println("3. Exit");
+            displayMenuOptions(Arrays.asList(
+                    "Choose the type of trip:",
+                    "1. Book a package trip",
+                    "2. Book a custom trip, choosing individually",
+                    "3. Show all bookings",
+                    "0. Exit"
+            ));
 
-            int choice = Integer.parseInt(scanner.nextLine());
-
-            switch (choice) {
-                case 1:
-                    packageMenu();
-                    break;
-                case 2:
-                    customMenu();
-                    break;
-                case 3:
+            switch (Integer.parseInt(scanner.nextLine())) {
+                case 1 -> packageMenu();
+                case 2 -> customMenu();
+                case 3 -> bookingMenu();
+                case 0 -> {
                     System.out.println("Thank you for using Trip Planner. Goodbye!");
-                    return;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.exit(0);
+                }
+                default -> System.out.println("Invalid choice. Please try again.");
             }
         }
     }
 
-    private User getUserFromInput() {
+    private void displayMenuOptions(List<String> options) {
+        options.forEach(System.out::println);
+    }
 
-        System.out.print("Enter user ID: ");
-        int userId = Integer.parseInt(scanner.nextLine());
-
-        // Use UserService to get the user by ID
-        User user = userService.getUser(userId);
-
-
-        if (user == null) {
-            System.out.println("User not found. Please try again.");
-            // Retry getting the user if not found
-            return getUserFromInput();
-        }
-        System.out.println("Hello " + user.getFirstName());
-        return user;
+    private void bookingMenu() {
+        bookingService.getAllCustomTripsFromUser(currentUser).forEach(System.out::println);
+        bookingService.getAllPackageTripsFromUser(currentUser).forEach(System.out::println);
+        mainMenu();
     }
 
     private void packageMenu() {
-        System.out.println("-----------------------------");
-        User user = getUserFromInput();
-        System.out.println("-----------------------------");
-        System.out.println("Choose a package trip, 1-10:");
-        System.out.println("11 to return to main menu");
-        // Example packages, you can modify these
+        displayMenuOptions(Arrays.asList(
+                "Choose a package trip, 1-10:",
+                "0 to return to main menu"
+        ));
         packageTripsService.getAllPackageTrips();
+        handlePackageChoice();
+    }
 
+    private void handlePackageChoice() {
         int choice = Integer.parseInt(scanner.nextLine());
-
         if (choice >= 1 && choice <= 10) {
-            addPackageTripToBooking(choice, user);
-        } else if (choice == 11) {
+            bookingService.addToCart(choice, currentUser);
+        } else if (choice == 0) {
             mainMenu();
         } else {
             System.out.println("Invalid choice. Please try again.");
@@ -123,41 +112,73 @@ public class TripPlanner {
         }
     }
 
-    private void addPackageTripToBooking(int choice, User user) {
-        System.out.println("AddPackagetriptobooking method");
-        bookingService.addToCart(choice, user);
-    }
-
     private void customMenu() {
-        System.out.println("-----------------------------");
-        System.out.println("Custom Trip:");
-        System.out.println("1. Choose Accommodation");
-        System.out.println("2. Choose Add-ons");
-        System.out.println("3. Choose Activities");
-        System.out.println("4. Go back to main menu");
+        int chosenDestination = addDestinationToCustomTrip();
+        int chosenAccommodation = addAccommodationToCustomTrip();
+        List<Activity> chosenActivities = addEntitiesToCustomTrip("activity", activityService::getAllActivities, activityService::findById);
+        List<Addon> chosenAddons = addEntitiesToCustomTrip("addon", addonService::getAllAddons, addonService::findById);
 
-        int choice = Integer.parseInt(scanner.nextLine());
+        double totalPrice = calculateTotalPrice(chosenDestination, chosenAccommodation, chosenActivities, chosenAddons);
 
-        switch (choice) {
-            case 1:
+        CustomTrip customTrip = CustomTrip.builder()
+                .destination(chosenDestination)
+                .accommodation(chosenAccommodation)
+                .activities(chosenActivities)
+                .addons(chosenAddons)
+                .totalPrice(totalPrice)
+                .build();
 
-                break;
-            case 2:
-                // chooseAddons();
-                break;
-            case 3:
-                // chooseActivities();
-                break;
-            case 4:
-                break;
-            default:
-                System.out.println("Invalid choice. Please try again.");
-                customMenu();
+        tripService.addTrip(customTrip);
+        tripService.addBooking(currentUser, customTrip.getId());
+        System.out.println("Trip created successfully!");
+
+        if (Integer.parseInt(promptForInput("0. Go back to the main menu")) != 0) {
+            System.out.println("Invalid choice. Please try again.");
+            customMenu();
+        } else {
+            mainMenu();
         }
     }
 
-    public static void main(String[] args) {
-        TripPlanner tripPlanner = new TripPlanner();
-        tripPlanner.run();
+    private double calculateTotalPrice(int destinationId, int accommodationId, List<Activity> chosenActivities, List<Addon> chosenAddons) {
+        double destinationPrice = destinationService.findPriceById(destinationId);
+        double accommodationPrice = accomodationService.findPriceById(accommodationId);
+
+        double activityTotal = chosenActivities.stream().mapToDouble(Activity::getPrice).sum();
+        double addonTotal = chosenAddons.stream().mapToDouble(Addon::getPrice).sum();
+
+        return destinationPrice + accommodationPrice + activityTotal + addonTotal;
+    }
+
+// We'll keep `addDestinationToCustomTrip` and `addAccommodationToCustomTrip` methods as they are.
+
+
+
+    private <T> List<T> addEntitiesToCustomTrip(String entityName, Runnable displayAll, java.util.function.Function<Long, T> findById) {
+        List<T> entities = new ArrayList<>();
+        boolean addMore = true;
+
+        while (addMore) {
+            System.out.println("All " + entityName + "s:");
+            displayAll.run();
+
+            entities.add(findById.apply(Long.valueOf(promptForInput("Choose a " + entityName + ", input id:"))));
+
+            addMore = "yes".equalsIgnoreCase(promptForInput("Do you want to add more " + entityName + "s? (yes/no):"));
+        }
+
+        return entities;
+    }
+
+    private int addDestinationToCustomTrip() {
+        System.out.println("Choose a destination:");
+        destinationService.getAllDestinations();
+        return Integer.parseInt(scanner.nextLine());
+    }
+
+    private int addAccommodationToCustomTrip() {
+        System.out.println("All accommodations:");
+        accomodationService.getAllAccomodations();
+        return Integer.parseInt(scanner.nextLine());
     }
 }

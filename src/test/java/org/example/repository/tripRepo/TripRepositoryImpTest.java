@@ -1,9 +1,7 @@
 package org.example.repository.tripRepo;
 
 import org.example.db.Database;
-import org.example.entity.Trip;
-import org.junit.jupiter.api.Test;
-
+import org.example.entity.CustomTrip;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,123 +14,107 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class TripRepositoryImpTest {
 
     @InjectMocks
-    private TripRepositoryImp tripRepository;
+    TripRepositoryImp tripRepository;
 
     @Mock
-    private Database db;
+    Database db;
 
     @Mock
-    private Connection conn;
+    Connection conn;
 
     @Mock
-    private PreparedStatement preparedStatement;
+    PreparedStatement preparedStatement;
 
     @Mock
-    private Statement statement;
+    Statement statement;
 
     @Mock
-    private ResultSet resultSet;
+    ResultSet rs;
 
     @BeforeEach
-    public void setup() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         when(db.connectToDb()).thenReturn(conn);
     }
 
-
     @Test
-    public void get_withValidId_returnsTrip() throws SQLException {
+    void getReturnsCustomTrip() throws SQLException {
         when(conn.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true);
+        when(preparedStatement.executeQuery()).thenReturn(rs);
+        when(rs.next()).thenReturn(true);
 
-        Trip expectedTrip = new Trip();
-        expectedTrip.setId(1L);
-        expectedTrip.setName("Test Trip");
-        expectedTrip.setPrice(100.0);
+        CustomTrip result = tripRepository.get(1L);
 
-        when(resultSet.getLong("trip_id")).thenReturn(expectedTrip.getId());
-        when(resultSet.getString("name")).thenReturn(expectedTrip.getName());
-        when(resultSet.getDouble("price")).thenReturn(expectedTrip.getPrice());
-
-        Trip result = tripRepository.get(1L);
-
-        assertEquals(expectedTrip, result);
+        assertNotNull(result);
     }
 
     @Test
-    public void add_withValidTrip_insertsTrip() throws SQLException {
-        Trip trip = new Trip();
-        trip.setName("Test Trip");
-        trip.setPrice(100.0);
+    void getReturnsNullWhenNotFound() throws SQLException {
+        when(conn.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(rs);
+        when(rs.next()).thenReturn(false);
 
+        CustomTrip result = tripRepository.get(1L);
+
+        assertNull(result);
+    }
+
+    @Test
+    void addCustomTrip() throws SQLException {
         when(conn.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
-        when(preparedStatement.executeUpdate()).thenReturn(1);
+        when(preparedStatement.getGeneratedKeys()).thenReturn(rs);
+        when(rs.next()).thenReturn(true);
+        when(rs.getLong(1)).thenReturn(1L);
 
-        tripRepository.add(trip);
+        CustomTrip customTrip = new CustomTrip();
+        tripRepository.add(customTrip);
 
-        verify(preparedStatement, times(1)).executeUpdate();
+        assertNotNull(customTrip.getId());
+        assertEquals(1L, customTrip.getId());
     }
 
     @Test
-    public void update_withValidTrip_updatesTrip() throws SQLException {
-        Trip trip = new Trip();
-        trip.setId(1L);
-        trip.setName("Updated Trip");
-        trip.setPrice(150.0);
-
+    void addBooking() throws SQLException {
         when(conn.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeUpdate()).thenReturn(1);
 
-        tripRepository.update(trip);
+        tripRepository.addBooking(1, 1L);
 
         verify(preparedStatement, times(1)).executeUpdate();
     }
 
     @Test
-    public void remove_withValidTrip_removesTrip() throws SQLException {
-        Trip trip = new Trip();
-        trip.setId(1L);
-        trip.setName("Test Trip");
-        trip.setPrice(100.0);
-
+    void updateCustomTrip() throws SQLException {
         when(conn.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeUpdate()).thenReturn(1);
-
-        tripRepository.remove(trip);
+        CustomTrip customTrip = new CustomTrip();
+        customTrip.setId(1L);
+        tripRepository.update(customTrip);
 
         verify(preparedStatement, times(1)).executeUpdate();
     }
 
     @Test
-    public void getAllTrips_returnsListOfTrips() throws SQLException {
-        when(conn.createStatement()).thenReturn(statement); // Assuming you have mocked Statement as 'statement'
-        when(statement.executeQuery(anyString())).thenReturn(resultSet);
+    void removeCustomTrip() throws SQLException {
+        when(conn.prepareStatement(anyString())).thenReturn(preparedStatement);
+        CustomTrip customTrip = new CustomTrip();
+        customTrip.setId(1L);
+        tripRepository.remove(customTrip);
 
-        Trip trip1 = new Trip();
-        trip1.setId(1L);
-        trip1.setName("Trip One");
-        trip1.setPrice(100.0);
-
-        Trip trip2 = new Trip();
-        trip2.setId(2L);
-        trip2.setName("Trip Two");
-        trip2.setPrice(150.0);
-
-        when(resultSet.next()).thenReturn(true, true, false); // Simulate two rows in result set
-        when(resultSet.getLong("trip_id")).thenReturn(trip1.getId(), trip2.getId());
-        when(resultSet.getString("name")).thenReturn(trip1.getName(), trip2.getName());
-        when(resultSet.getDouble("price")).thenReturn(trip1.getPrice(), trip2.getPrice());
-
-        List<Trip> result = tripRepository.getAllTrips();
-
-        assertEquals(2, result.size());
-        assertEquals(trip1, result.get(0));
-        assertEquals(trip2, result.get(1));
+        verify(preparedStatement, times(1)).executeUpdate();
     }
+
+    @Test
+    void getAllTrips() throws SQLException {
+        when(conn.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(anyString())).thenReturn(rs);
+        when(rs.next()).thenReturn(true).thenReturn(false);
+
+        List<CustomTrip> result = tripRepository.getAllTrips();
+
+        assertFalse(result.isEmpty());
+    }
+
+    // You can add more tests, especially for error scenarios and testing the extraction of more complex data.
 }

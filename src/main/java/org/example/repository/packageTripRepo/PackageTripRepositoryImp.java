@@ -2,7 +2,6 @@ package org.example.repository.packageTripRepo;
 
 import org.example.db.Database;
 import org.example.entity.PackageTrip;
-import org.example.entity.Trip;
 
 
 import java.sql.*;

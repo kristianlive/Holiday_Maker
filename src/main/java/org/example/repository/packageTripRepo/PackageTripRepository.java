@@ -1,8 +1,6 @@
 package org.example.repository.packageTripRepo;
 
 import org.example.entity.PackageTrip;
-import org.example.entity.Trip;
-
 
 
 import java.util.List;

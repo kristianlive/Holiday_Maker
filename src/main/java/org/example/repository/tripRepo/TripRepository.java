@@ -1,16 +1,16 @@
 package org.example.repository.tripRepo;
 
-import org.example.entity.Trip;
+import org.example.entity.CustomTrip;
 
 
 
 import java.util.List;
 
 public interface TripRepository {
-    Trip get(Long id);
-    void add(Trip trip);
-    void update(Trip trip);
-    void remove(Trip trip);
+    CustomTrip get(Long id);
+    void add(CustomTrip customTrip);
+    void update(CustomTrip customTrip);
+    void remove(CustomTrip customTrip);
 
-    List<Trip> getAllTrips();
+    List<CustomTrip> getAllTrips();
 }

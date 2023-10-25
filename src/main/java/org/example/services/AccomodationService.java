@@ -16,6 +16,10 @@ public class AccomodationService {
         System.out.println(accomodationRepository.get(id));
     }
 
+    public double findPriceById(int id) {
+        return accomodationRepository.get((long) id).getPrice();
+    }
+
     public void addAccomodation(Accomodation accomodation) {
         accomodationRepository.add(accomodation);
         System.out.println("Accomodation added");
