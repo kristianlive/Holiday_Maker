@@ -2,6 +2,7 @@ package org.example.repository.packageTripRepo;
 
 import org.example.db.Database;
 import org.example.entity.PackageTrip;
+import org.example.entity.PackageTripDetails;
 
 
 import java.sql.*;
@@ -33,28 +34,34 @@ public class PackageTripRepositoryImp implements PackageTripRepository {
     }
 
     @Override
-    public List<PackageTrip> getAllPackageTrips() {
-        List<PackageTrip> packagetrips = new ArrayList<>();
-        String sql = "SELECT * FROM package_trips";
+    public List<PackageTripDetails> getAllPackageTrips() {
+        List<PackageTripDetails> packageTrips = new ArrayList<>();
+        String sql = "SELECT pt.id, pt.destination, pt.description, a.type AS accommodation, ad.title AS addons, act.title AS activity, pt.price " +
+                "FROM package_trips pt " +
+                "LEFT JOIN accommodation a ON pt.accommodation_id = a.id " +
+                "LEFT JOIN addon ad ON pt.addon_id = ad.id " +
+                "LEFT JOIN activity act ON pt.activity_id = act.id";
         try (Connection conn = db.connectToDb();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                PackageTrip packagetrip = PackageTrip.builder()
-                        .id(rs.getLong("id"))
+                PackageTripDetails packageTrip = PackageTripDetails.builder()
+                        .bookingsId(rs.getLong("id"))
                         .destination(rs.getString("destination"))
                         .description(rs.getString("description"))
-                        .accommodation_id(rs.getInt("accommodation_id"))
-                        .addon_id(rs.getInt("addon_id"))
-                        .activity_id(rs.getInt("activity_id"))
-                        .price(rs.getDouble("price"))
+                        .accommodationType(rs.getString("accommodation"))
+                        .addonTitle(rs.getString("addons"))
+                        .activityTitle(rs.getString("activity"))
+                        .totalprice(rs.getDouble("price"))
                         .build();
 
-                packagetrips.add(packagetrip);
+                packageTrips.add(packageTrip);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return packagetrips;
+        return packageTrips;
     }
+
+
 }
