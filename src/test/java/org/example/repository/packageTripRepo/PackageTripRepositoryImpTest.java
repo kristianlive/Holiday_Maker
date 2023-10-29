@@ -2,6 +2,7 @@ package org.example.repository.packageTripRepo;
 
 import org.example.db.Database;
 import org.example.entity.PackageTrip;
+import org.example.entity.PackageTripDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -73,10 +74,10 @@ class PackageTripRepositoryImpTest {
         when(rs.getString("destination")).thenReturn("destination");
         // ... mock other fields ...
 
-        List<PackageTrip> result = packageTripRepository.getAllPackageTrips();
+        List<PackageTripDetails> result = packageTripRepository.getAllPackageTrips();
 
         assertFalse(result.isEmpty());
-        assertEquals(1L, result.get(0).getId());
+        assertEquals(1L, result.get(0).getBookingsId());
     }
 
     // You may also want to add tests for SQL exception scenarios.
