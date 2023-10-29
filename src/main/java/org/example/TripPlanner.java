@@ -19,10 +19,8 @@ import java.util.Scanner;
 
 
 public class TripPlanner {
-
     private int currentUser;
     private final Scanner scanner = new Scanner(System.in);
-
     private final UserService userService = new UserService(new UserRepositoryImp());
     private final PackageTripsServices packageTripsService = new PackageTripsServices(new PackageTripRepositoryImp());
     private final BookingService bookingService = new BookingService(new BookingRepositoryImp());
